@@ -15,8 +15,10 @@ public class AgentController : MonoBehaviour
     private GameObject model;
     private Rigidbody rb;
 
+    public bool connected = false;
     public bool isPlayer;
     public int team = 0;
+    public int hp = 3;
     public float speed = 10f;
 
     // shoot time
@@ -24,6 +26,9 @@ public class AgentController : MonoBehaviour
     public float shootCD = 1f;
     public float projSpd = 20f;
     public float shootAcc = 20f;
+
+
+    public float connectDist = 2f;
 
     //ai var
     // For speed 
@@ -54,6 +59,10 @@ public class AgentController : MonoBehaviour
         pi.PlayerControls.Aim.performed += ctx => aimInput = ctx.ReadValue<Vector2>();
         pi.PlayerControls.Shoot.performed += ctx => HandleShoot();
         //pi.PlayerControls.Aim.canceled += ctx => aimInput = Vector2.zero;
+
+        if (isPlayer) {
+            connected = true;
+        }
     }
 
     private void FixedUpdate() {
@@ -62,7 +71,15 @@ public class AgentController : MonoBehaviour
             model.GetComponent<MeshRenderer>().material.color = Color.Lerp(model.GetComponent<MeshRenderer>().material.color, Color.red, 0.1f);
         }
         else {
-            HandleMove_AI();
+            if (connected) {
+                HandleMove_AI();
+            }
+            else {
+                if (Vector3.Distance(transform.position, gm.PlayerAgent.transform.position) < connectDist) {
+                    model.GetComponent<MeshRenderer>().material.color = Color.red;
+                    connected = true;
+                }
+            }
         }
         
     }
