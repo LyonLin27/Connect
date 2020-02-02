@@ -596,8 +596,9 @@ public class SteeringBehavior : MonoBehaviour {
                 continue;
             }
             else {
+                // coll must be agent
                 Vector3 otherPos = coll.gameObject.transform.position;
-                Rigidbody otherRB = coll.gameObject.GetComponent<Rigidbody>();
+                Rigidbody otherRB = coll.gameObject.GetComponentInParent<Rigidbody>();
 
                 Vector3 relPos = otherPos - transform.position;
                 Vector3 relVel = otherRB.velocity - rb.velocity;

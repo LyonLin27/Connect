@@ -7,7 +7,7 @@ public class AgentController : MonoBehaviour
     // player input components
     PlayerInput pi;
     SteeringBehavior ai;
-    AgentMan am;
+    GameMan am;
 
     Vector2 moveInput;
     Vector2 aimInput;
@@ -32,7 +32,7 @@ public class AgentController : MonoBehaviour
     private float angular;          // The resilts of the kinematic steering requested
 
     private void Awake() {
-        am = FindObjectOfType<AgentMan>();
+        am = FindObjectOfType<GameMan>();
         ai = GetComponent<SteeringBehavior>();
         model = gameObject.transform.Find("Cube").gameObject;
         rb = GetComponent<Rigidbody>();
@@ -52,6 +52,7 @@ public class AgentController : MonoBehaviour
     private void FixedUpdate() {
         if (isPlayer) {
             HandleMove_Player();
+            model.GetComponent<MeshRenderer>().material.color = Color.Lerp(model.GetComponent<MeshRenderer>().material.color, Color.red, 0.1f);
         }
         else {
             HandleMove_AI();
@@ -92,7 +93,8 @@ public class AgentController : MonoBehaviour
         velocity += steeringlin * time;
         rotation += steeringang * time;
 
-        rb.AddForce(velocity - rb.velocity, ForceMode.VelocityChange);
+        //rb.AddForce(velocity - rb.velocity, ForceMode.VelocityChange);
+        rb.velocity = Vector3.Lerp(rb.velocity, velocity, 0.2f);
         position = rb.position;
         //rb.MoveRotation(Quaternion.Euler(new Vector3(0, Mathf.Rad2Deg * orientation, 0)));
         //rb.angularVelocity = new Vector3(rb.angularVelocity.x, rotation * Mathf.Rad2Deg, rb.angularVelocity.z);
