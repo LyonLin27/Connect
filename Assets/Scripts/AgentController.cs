@@ -76,7 +76,7 @@ public class AgentController : MonoBehaviour
             }
             else {
                 if (Vector3.Distance(transform.position, gm.PlayerAgent.transform.position) < connectDist) {
-                    model.GetComponent<MeshRenderer>().material.color = Color.red;
+                    //model.GetComponent<MeshRenderer>().material.SetColor("");
                     connected = true;
                 }
             }
