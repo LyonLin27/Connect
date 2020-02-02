@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerProj : MonoBehaviour
-{
+public class PlayerProj : MonoBehaviour {
     public float speed = 20;
     private Rigidbody rb;
 
@@ -17,6 +16,11 @@ public class PlayerProj : MonoBehaviour
     }
 
     private void OnCollisionEnter(Collision collision) {
-        gameObject.SetActive(false);   
+        gameObject.SetActive(false);
+    }
+
+    IEnumerator DisableAfterTime(float time) {
+        yield return new WaitForSeconds(time);
+        gameObject.SetActive(false);
     }
 }

@@ -15,11 +15,14 @@ public class AgentController : MonoBehaviour
     private GameObject model;
     private Rigidbody rb;
 
+    private ParticleSystem wakeParticle;
+
     public bool connected = false;
     public bool isPlayer;
     public int team = 0;
     public int hp = 3;
     public float speed = 10f;
+    public float speedLimit = 15f;
 
     // shoot time
     float lastShootTime = 0f;
@@ -29,6 +32,8 @@ public class AgentController : MonoBehaviour
 
 
     public float connectDist = 2f;
+    private Material mat;
+    private Color playerBlue = new Color(0f, 0.589f, 1f);
 
     //ai var
     // For speed 
@@ -48,6 +53,8 @@ public class AgentController : MonoBehaviour
         model = gameObject.transform.Find("Cube").gameObject;
         rb = GetComponent<Rigidbody>();
         pi = new PlayerInput();
+        mat = model.GetComponent<MeshRenderer>().material;
+        wakeParticle = transform.Find("WakeParticle").GetComponent<ParticleSystem>();
 
 
         ai.target = gm.PlayerAgent;
@@ -76,8 +83,21 @@ public class AgentController : MonoBehaviour
             }
             else {
                 if (Vector3.Distance(transform.position, gm.PlayerAgent.transform.position) < connectDist) {
-                    //model.GetComponent<MeshRenderer>().material.SetColor("");
-                    connected = true;
+                    // wake up
+                    mat.SetColor("_BaseColor", Color.Lerp(mat.GetColor("_BaseColor"), playerBlue, 0.1f));
+                    model.transform.Rotate(0f, 10f, 0f);
+                    gameObject.transform.Translate(0f, Time.fixedDeltaTime, 0f);
+
+                    if (gameObject.transform.position.y > gm.PlayerAgent.transform.position.y) {
+                        mat.SetColor("_BaseColor", playerBlue);
+                        gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - gm.PlayerAgent.transform.position.y, 0f);
+                        wakeParticle.Play();
+                        connected = true;
+                    }
+                }
+                else {
+                    mat.SetColor("_BaseColor", Color.grey);
+                    gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - 0.25f, 0f);
                 }
             }
         }
@@ -96,6 +116,10 @@ public class AgentController : MonoBehaviour
 
     private void HandleShoot() {
         if (Time.time - lastShootTime < shootCD) {
+            return;
+        }
+
+        if (!connected) {
             return;
         }
 
@@ -150,6 +174,9 @@ public class AgentController : MonoBehaviour
 
         //rb.AddForce(velocity - rb.velocity, ForceMode.VelocityChange);
         rb.velocity = Vector3.Lerp(rb.velocity, velocity, 0.2f);
+        if (rb.velocity.magnitude > speedLimit) {
+            rb.velocity = rb.velocity.normalized * speedLimit;
+        }
         position = rb.position;
         //rb.MoveRotation(Quaternion.Euler(new Vector3(0, Mathf.Rad2Deg * orientation, 0)));
         //rb.angularVelocity = new Vector3(rb.angularVelocity.x, rotation * Mathf.Rad2Deg, rb.angularVelocity.z);
