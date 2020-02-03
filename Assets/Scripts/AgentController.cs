@@ -7,7 +7,7 @@ public class AgentController : MonoBehaviour
     // player input components
     PlayerInput pi;
     SteeringBehavior ai;
-    GameMan am;
+    GameMan gm;
 
     Vector2 moveInput;
     Vector2 aimInput;
@@ -15,9 +15,25 @@ public class AgentController : MonoBehaviour
     private GameObject model;
     private Rigidbody rb;
 
+    private ParticleSystem wakeParticle;
+
+    public bool connected = false;
     public bool isPlayer;
     public int team = 0;
+    public int hp = 3;
     public float speed = 10f;
+    public float speedLimit = 15f;
+
+    // shoot time
+    float lastShootTime = 0f;
+    public float shootCD = 1f;
+    public float projSpd = 20f;
+    public float shootAcc = 20f;
+
+
+    public float connectDist = 2f;
+    private Material mat;
+    private Color playerBlue = new Color(0f, 0.589f, 1f);
 
     //ai var
     // For speed 
@@ -32,21 +48,28 @@ public class AgentController : MonoBehaviour
     private float angular;          // The resilts of the kinematic steering requested
 
     private void Awake() {
-        am = FindObjectOfType<GameMan>();
+        gm = FindObjectOfType<GameMan>();
         ai = GetComponent<SteeringBehavior>();
         model = gameObject.transform.Find("Cube").gameObject;
         rb = GetComponent<Rigidbody>();
         pi = new PlayerInput();
+        mat = model.GetComponent<MeshRenderer>().material;
+        wakeParticle = transform.Find("WakeParticle").GetComponent<ParticleSystem>();
 
 
-        ai.target = am.PlayerAgent;
+        ai.target = gm.PlayerAgent;
         position = rb.position;
         orientation = transform.eulerAngles.y;
 
         pi.PlayerControls.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
         pi.PlayerControls.Move.canceled += ctx => moveInput = Vector2.zero;
         pi.PlayerControls.Aim.performed += ctx => aimInput = ctx.ReadValue<Vector2>();
+        pi.PlayerControls.Shoot.performed += ctx => HandleShoot();
         //pi.PlayerControls.Aim.canceled += ctx => aimInput = Vector2.zero;
+
+        if (isPlayer) {
+            connected = true;
+        }
     }
 
     private void FixedUpdate() {
@@ -55,7 +78,28 @@ public class AgentController : MonoBehaviour
             model.GetComponent<MeshRenderer>().material.color = Color.Lerp(model.GetComponent<MeshRenderer>().material.color, Color.red, 0.1f);
         }
         else {
-            HandleMove_AI();
+            if (connected) {
+                HandleMove_AI();
+            }
+            else {
+                if (Vector3.Distance(transform.position, gm.PlayerAgent.transform.position) < connectDist) {
+                    // wake up
+                    mat.SetColor("_BaseColor", Color.Lerp(mat.GetColor("_BaseColor"), playerBlue, 0.1f));
+                    model.transform.Rotate(0f, 10f, 0f);
+                    gameObject.transform.Translate(0f, Time.fixedDeltaTime, 0f);
+
+                    if (gameObject.transform.position.y > gm.PlayerAgent.transform.position.y) {
+                        mat.SetColor("_BaseColor", playerBlue);
+                        gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - gm.PlayerAgent.transform.position.y, 0f);
+                        wakeParticle.Play();
+                        connected = true;
+                    }
+                }
+                else {
+                    mat.SetColor("_BaseColor", Color.grey);
+                    gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - 0.25f, 0f);
+                }
+            }
         }
         
     }
@@ -68,6 +112,41 @@ public class AgentController : MonoBehaviour
         //aim
         Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(model.transform.position);
         model.transform.forward = ToVec3((aimInput - playerScreenPos).normalized);
+    }
+
+    private void HandleShoot() {
+        if (Time.time - lastShootTime < shootCD) {
+            return;
+        }
+
+        if (!connected) {
+            return;
+        }
+
+        if (isPlayer) {
+            lastShootTime = Time.time;
+            GameObject proj = gm.GetPlayerProj();
+            proj.transform.position = model.transform.position;
+            proj.transform.rotation = model.transform.rotation;
+            proj.transform.Rotate(0f, Random.value * shootAcc - shootAcc/2f, 0f);
+            proj.GetComponent<PlayerProj>().speed = projSpd;
+            proj.SetActive(true);
+        }
+        else {
+            float randomFloat = Random.value/2f;
+            StartCoroutine("ShootAfterTime", randomFloat);
+        }
+    }
+    IEnumerator ShootAfterTime(float time) {
+        yield return new WaitForSeconds(time);
+
+        lastShootTime = Time.time;
+        GameObject proj = gm.GetPlayerProj();
+        proj.transform.position = model.transform.position;
+        proj.transform.rotation = model.transform.rotation;
+        proj.GetComponent<PlayerProj>().speed = projSpd;
+        proj.transform.Rotate(0f, Random.value * shootAcc - shootAcc / 2f, 0f);
+        proj.SetActive(true);
     }
 
     private void HandleMove_AI() {
@@ -95,9 +174,15 @@ public class AgentController : MonoBehaviour
 
         //rb.AddForce(velocity - rb.velocity, ForceMode.VelocityChange);
         rb.velocity = Vector3.Lerp(rb.velocity, velocity, 0.2f);
+        if (rb.velocity.magnitude > speedLimit) {
+            rb.velocity = rb.velocity.normalized * speedLimit;
+        }
         position = rb.position;
         //rb.MoveRotation(Quaternion.Euler(new Vector3(0, Mathf.Rad2Deg * orientation, 0)));
         //rb.angularVelocity = new Vector3(rb.angularVelocity.x, rotation * Mathf.Rad2Deg, rb.angularVelocity.z);
+
+        Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(model.transform.position);
+        model.transform.forward = ToVec3((aimInput - playerScreenPos).normalized);
     }
 
     protected Vector2 Square2Circle(Vector2 input) {

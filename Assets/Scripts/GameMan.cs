@@ -14,6 +14,12 @@ public class GameMan : MonoBehaviour
     public GameObject projectileNormalPrefab;
     public List<GameObject> projectileNormal;
     public int projectileNomralIndex = -1;
+    [HideInInspector]
+    public GameObject[] playerProjArr;
+    public GameObject playerProjParent;
+    public GameObject playerProjPrefab;
+    private int playerProjIndex = 0;
+    private int ppaLen = 300;
 
     public GameObject testObj;
     public GameObject testObj2;
@@ -30,14 +36,28 @@ public class GameMan : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
+    private void Start() {
+
+        playerProjArr = new GameObject[ppaLen];
+        for (int i = 0; i < ppaLen; i++) {
+            playerProjArr[i] = Instantiate(playerProjPrefab, playerProjParent.transform);
+            playerProjArr[i].SetActive(false);
+        }
+        
         for (int i = 0; i < 10; i++)
         {
             GameObject projectileObj  = Instantiate(projectileNormalPrefab);
             projectileObj.SetActive(false);
             projectileNormal.Add(projectileObj);
         }
+    }
+
+    public GameObject GetPlayerProj() {
+        playerProjIndex++;
+        if (playerProjIndex >= ppaLen) {
+            playerProjIndex = 0;
+        }
+        return playerProjArr[playerProjIndex];
     }
 
     private void Update()
