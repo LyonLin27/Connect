@@ -7,6 +7,8 @@ public class GameMan : MonoBehaviour
     public static GameMan Instance { get; private set; }
 
     public GameObject PlayerAgent;
+    [HideInInspector]
+    public List<GameObject> Agents;
 
     [HideInInspector]
     public GameObject[] playerProjArr;
@@ -23,6 +25,13 @@ public class GameMan : MonoBehaviour
     private int enemyProjIndex_Normal = 0;
     private int epaLen_Normal = 300;
 
+    [HideInInspector]
+    public GameObject[] projPtcWtArr;
+    public GameObject projPtcParent;
+    public GameObject projPtcWtPrefab;
+    private int projPtcWtIndex = 0;
+    private int ppwaLen = 20;
+
     private void Awake() {
         if (Instance == null)
         {
@@ -35,6 +44,8 @@ public class GameMan : MonoBehaviour
     }
 
     private void Start() {
+        Agents = new List<GameObject>();
+        Agents.Add(PlayerAgent);
 
         playerProjArr = new GameObject[ppaLen];
         for (int i = 0; i < ppaLen; i++) {
@@ -48,6 +59,25 @@ public class GameMan : MonoBehaviour
             enemyProjArr_Normal[i] = Instantiate(enemyProjPrefab_Normal, enemyProjParent.transform);
             enemyProjArr_Normal[i].SetActive(false);
         }
+
+        projPtcWtArr = new GameObject[ppwaLen];
+        for (int i = 0; i < ppwaLen; i++) {
+            projPtcWtArr[i] = Instantiate(projPtcWtPrefab, projPtcParent.transform);
+        }
+    }
+
+    public void SwitchPlayer() {
+        if (Agents.Count == 0) {
+            print("Game Over");
+            return;
+        }
+        PlayerAgent = Agents[0];
+        PlayerAgent.GetComponent<AgentController>().isPlayer = true;
+
+        foreach (GameObject agent in Agents) {
+            agent.GetComponent<AgentController>().UpdateFollowTarget();
+        }
+        Camera.main.GetComponent<CameraController>().SwitchPlayer(PlayerAgent);
     }
 
     public GameObject GetPlayerProj() {
@@ -71,6 +101,14 @@ public class GameMan : MonoBehaviour
             default:
                 return null;
         }
+    }
+
+    public GameObject GetProjPtcWt() {
+        projPtcWtIndex++;
+        if (projPtcWtIndex >= ppwaLen) {
+            projPtcWtIndex = 0;
+        }
+        return projPtcWtArr[projPtcWtIndex];
     }
 
 }

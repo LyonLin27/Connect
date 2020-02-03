@@ -16,6 +16,7 @@ public class AgentController : MonoBehaviour
     private Rigidbody rb;
 
     private ParticleSystem wakeParticle;
+    private ParticleSystem deathParticle;
 
     public bool connected = false;
     public bool isPlayer;
@@ -55,6 +56,7 @@ public class AgentController : MonoBehaviour
         pi = new PlayerInput();
         mat = model.GetComponent<MeshRenderer>().material;
         wakeParticle = transform.Find("WakeParticle").GetComponent<ParticleSystem>();
+        deathParticle = transform.Find("DeathParticle").GetComponent<ParticleSystem>();
 
 
         ai.target = gm.PlayerAgent;
@@ -92,6 +94,9 @@ public class AgentController : MonoBehaviour
                         mat.SetColor("_BaseColor", playerBlue);
                         gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - gm.PlayerAgent.transform.position.y, 0f);
                         wakeParticle.Play();
+                        gm.Agents.Add(gameObject);
+                        UpdateFollowTarget();
+                        print(gameObject.name + " connected");
                         connected = true;
                     }
                 }
@@ -183,6 +188,25 @@ public class AgentController : MonoBehaviour
 
         Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(model.transform.position);
         model.transform.forward = ToVec3((aimInput - playerScreenPos).normalized);
+    }
+
+    private void OnCollisionEnter(Collision coll) {
+        if (coll.gameObject.layer == LayerMask.NameToLayer("EnemyProj")) {
+            connected = false;
+            mat.SetColor("_BaseColor", Color.grey);
+            gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - 0.25f, 0f);
+            gm.Agents.Remove(gameObject);
+            deathParticle.Play();
+
+            if (isPlayer) {
+                isPlayer = false;
+                gm.SwitchPlayer();
+            }
+        }
+    }
+
+    public void UpdateFollowTarget() {
+        ai.target = gm.PlayerAgent;
     }
 
     protected Vector2 Square2Circle(Vector2 input) {

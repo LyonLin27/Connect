@@ -12,7 +12,12 @@ public class CameraController : MonoBehaviour
     }
 
     private void FixedUpdate() {
-        transform.position = Vector3.Lerp(transform.position, cameraHandle.position, 0.5f);
+        transform.position = Vector3.Lerp(transform.position, cameraHandle.position, 0.1f);
         transform.LookAt(playerAgent.transform.position);
+    }
+
+    public void SwitchPlayer(GameObject player) {
+        playerAgent = player;
+        cameraHandle = playerAgent.transform.Find("CameraHandle");
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerProj : MonoBehaviour {
+
     public float speed = 20;
     private Rigidbody rb;
 
@@ -16,6 +17,9 @@ public class PlayerProj : MonoBehaviour {
     }
 
     private void OnCollisionEnter(Collision collision) {
+        GameObject ptc = GameMan.Instance.GetProjPtcWt();
+        ptc.transform.position = transform.position;
+        ptc.GetComponent<ParticleSystem>().Play();
         gameObject.SetActive(false);
     }
 
