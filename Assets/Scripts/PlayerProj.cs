@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerProj : MonoBehaviour {
 
     public float speed = 20;
+    public int dmg = 1;
     private Rigidbody rb;
 
     private void Start() {
