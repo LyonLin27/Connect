@@ -5,8 +5,17 @@ using UnityEngine;
 public class EnemyType1 : Enemy
 {
     public float fireCD;
-    public Vector3 projectileSpeed;
-    
+    public float projectileSpeed;
+    public float rotSpd = 10f;
+
+    protected override void Start() {
+        base.Start();
+        StartFire();
+    }
+
+    protected void FixedUpdate() {
+        rb.AddTorque(transform.up * rotSpd * Time.fixedDeltaTime, ForceMode.Force);
+    }
 
     public override void StartFire()
     {
@@ -17,10 +26,12 @@ public class EnemyType1 : Enemy
     {
         while (true)
         {
-            print(gameMan.projectileNomralIndex);
-            gameMan.projectileNormal[gameMan.GetEnemyProjectile(0)].GetComponent<EnemyProjectile>().StartWork
-                (transform.position, projectileSpeed);
             yield return new WaitForSeconds(fireCD);
+            GameObject proj = gameMan.GetEnemyProj(0);
+            proj.transform.position = transform.position;
+            proj.transform.rotation = transform.rotation;
+            proj.GetComponent<EnemyProjectile>().StartWork();
+            proj.GetComponent<Rigidbody>().velocity = projectileSpeed * proj.transform.forward;
         }
        
     }

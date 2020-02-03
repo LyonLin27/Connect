@@ -6,6 +6,8 @@ public class CollisionDetector : MonoBehaviour
 {
     [HideInInspector] public List<Collider> CollidersClose = new List<Collider>();
 
+    [HideInInspector] public List<Collider> DangersClose = new List<Collider>();
+
     [HideInInspector] public List<Vector3> CollPoints = new List<Vector3>();
 
     private SteeringBehavior parentAI;
@@ -38,13 +40,20 @@ public class CollisionDetector : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider other) {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Agent") || other.gameObject.layer == LayerMask.NameToLayer("Wall")) {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Agent") || other.gameObject.layer == LayerMask.NameToLayer("Wall") || other.gameObject.layer == LayerMask.NameToLayer("EnemyProj")) {
             if (parentAI && other.gameObject.name != parentAI.target.gameObject.name) {
             }
                 CollidersClose.Add(other);
         }
+        if (other.gameObject.layer == LayerMask.NameToLayer("EnemyProj")) {
+            DangersClose.Add(other);
+        }
     }
     private void OnTriggerExit(Collider other) {
         CollidersClose.Remove(other);
+
+        if (other.gameObject.layer == LayerMask.NameToLayer("EnemyProj")) {
+            DangersClose.Remove(other);
+        }
     }
 }

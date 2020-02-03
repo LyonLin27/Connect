@@ -8,6 +8,7 @@ public class EnemyProjectile : MonoBehaviour
     protected Rigidbody rb;
    
     public bool working = false;
+    public float lifeTime = 5f;
 
     // Start is called before the first frame update
     void Awake()
@@ -16,39 +17,30 @@ public class EnemyProjectile : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-        if (transform.position.x < gameMan.minX || transform.position.x > gameMan.maxX)
-        {
-            FinishWork();
-        }
-        if (transform.position.z < gameMan.minZ || transform.position.z > gameMan.maxZ)
-        {
-            FinishWork();
-        }
-        
-    }
-    private void OnCollisionEnter(Collision collision)
-    {
-        
+    private void Update() {
+        if(working)
+            Work();
     }
 
-    public virtual void DealDamage()
+    public virtual void StartWork()
     {
+        working = true;
+        gameObject.SetActive(true);
+        StartCoroutine("DisableAfterTime", lifeTime);
+    }
 
+    protected virtual void Work() {
+    
     }
-    public virtual void StartWork(Vector3 startPosition, Vector3 InitialSpeed)
-    {
-        
-    }
-    public virtual void StartWork(Vector3 param1, Vector3 param2, float param3, float param4)
-    {
 
-    }
     public virtual void FinishWork()
     {
+        working = false;
+        gameObject.SetActive(false);
+    }
 
+    IEnumerator DisableAfterTime(float time) {
+        yield return new WaitForSeconds(time);
+        FinishWork();
     }
 }
