@@ -32,6 +32,12 @@ public class GameMan : MonoBehaviour
     private int projPtcWtIndex = 0;
     private int ppwaLen = 20;
 
+    [HideInInspector]
+    public GameObject[] projPtcRdArr;
+    public GameObject projPtcRdPrefab;
+    private int projPtcRdIndex = 0;
+    private int ppraLen = 20;
+
     private void Awake() {
         if (Instance == null)
         {
@@ -63,6 +69,11 @@ public class GameMan : MonoBehaviour
         projPtcWtArr = new GameObject[ppwaLen];
         for (int i = 0; i < ppwaLen; i++) {
             projPtcWtArr[i] = Instantiate(projPtcWtPrefab, projPtcParent.transform);
+        }
+
+        projPtcRdArr = new GameObject[ppraLen];
+        for (int i = 0; i < ppraLen; i++) {
+            projPtcRdArr[i] = Instantiate(projPtcRdPrefab, projPtcParent.transform);
         }
     }
 
@@ -111,4 +122,11 @@ public class GameMan : MonoBehaviour
         return projPtcWtArr[projPtcWtIndex];
     }
 
+    public GameObject GetProjPtcRd() {
+        projPtcRdIndex++;
+        if (projPtcRdIndex >= ppraLen) {
+            projPtcRdIndex = 0;
+        }
+        return projPtcRdArr[projPtcRdIndex];
+    }
 }

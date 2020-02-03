@@ -426,6 +426,9 @@ MonoBehaviour:
   projPtcParent: {fileID: 121390081}
   projPtcWtPrefab: {fileID: 9140529535665304886, guid: eb87c56c2f30fe047bf81d845bde6d78,
     type: 3}
+  projPtcRdArr: []
+  projPtcRdPrefab: {fileID: 9140529535665304886, guid: 59b786a82de3be345b21911193931fc4,
+    type: 3}
 --- !u!1 &653260035
 GameObject:
   m_ObjectHideFlags: 0

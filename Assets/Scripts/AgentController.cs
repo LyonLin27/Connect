@@ -84,7 +84,9 @@ public class AgentController : MonoBehaviour
                 HandleMove_AI();
             }
             else {
-                if (Vector3.Distance(transform.position, gm.PlayerAgent.transform.position) < connectDist) {
+                if (Vector3.Distance(transform.position, gm.PlayerAgent.transform.position) < connectDist 
+                    && gm.PlayerAgent.GetComponent<AgentController>().connected) {
+
                     // wake up
                     mat.SetColor("_BaseColor", Color.Lerp(mat.GetColor("_BaseColor"), playerBlue, 0.1f));
                     model.transform.Rotate(0f, 10f, 0f);
@@ -110,6 +112,7 @@ public class AgentController : MonoBehaviour
     }
 
     private void HandleMove_Player() {
+        if (!connected) return;
         //move
         Vector2 moveVec = Square2Circle(moveInput);
         rb.velocity = Vector3.Lerp(rb.velocity, ToVec3(moveVec)*speed, 0.2f);
@@ -198,15 +201,21 @@ public class AgentController : MonoBehaviour
             gm.Agents.Remove(gameObject);
             deathParticle.Play();
 
+
             if (isPlayer) {
-                isPlayer = false;
-                gm.SwitchPlayer();
+                StartCoroutine("SwitchPlayerAfterTime", 1f);
             }
         }
     }
 
     public void UpdateFollowTarget() {
         ai.target = gm.PlayerAgent;
+    }
+
+    IEnumerator SwitchPlayerAfterTime(float time) {
+        yield return new WaitForSeconds(time);
+        isPlayer = false;
+        gm.SwitchPlayer();
     }
 
     protected Vector2 Square2Circle(Vector2 input) {
