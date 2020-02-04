@@ -591,35 +591,64 @@ public class SteeringBehavior : MonoBehaviour {
         float firstSep = 0f, firstDist = 0f;
         Vector3 firstRelPos = Vector3.zero, firstRelVel = Vector3.zero;
 
-        foreach (Collider coll in cylnCheck.CollidersClose) {
-            if (coll.gameObject.layer != LayerMask.NameToLayer("Agent")) {
+        foreach (Collider coll in cylnCheck.DangersClose) {
+            // coll must be enemy proj
+            // first check if projectile still there
+            if (!coll.gameObject.activeInHierarchy) continue;
+            Vector3 otherPos = coll.gameObject.transform.position;
+            Rigidbody otherRB = coll.gameObject.GetComponentInParent<Rigidbody>();
+
+            Vector3 relPos = otherPos - transform.position;
+            Vector3 relVel = otherRB.velocity - rb.velocity;
+            float relSpd = relVel.magnitude;
+            float time2Coll = -Vector3.Dot(relPos, relVel) / (relSpd * relSpd);
+
+            float dist = relPos.magnitude;
+            float minSep = dist - relSpd * time2Coll;
+            if (minSep > 1f) {
                 continue;
             }
-            else {
-                // coll must be agent
-                Vector3 otherPos = coll.gameObject.transform.position;
-                Rigidbody otherRB = coll.gameObject.GetComponentInParent<Rigidbody>();
 
-                Vector3 relPos = otherPos - transform.position;
-                Vector3 relVel = otherRB.velocity - rb.velocity;
-                float relSpd = relVel.magnitude;
-                float time2Coll = -Vector3.Dot(relPos, relVel) / (relSpd * relSpd);
+            if (time2Coll > 0 && time2Coll < shortestTime) {
+                shortestTime = time2Coll;
+                firstTarget = otherPos;
+                firstSep = minSep;
+                firstDist = dist;
+                firstRelPos = relPos;
+                firstRelVel = relVel;
+            }
+        }
 
-                float dist = relPos.magnitude;
-                float minSep = dist - relSpd * time2Coll;
-                if (minSep > 2f) {
+        if (firstSep == 0) {
+            foreach (Collider coll in cylnCheck.CollidersClose) {
+                if (coll.gameObject.layer != LayerMask.NameToLayer("Agent")) {
                     continue;
                 }
+                else {
+                    // coll must be agent
+                    Vector3 otherPos = coll.gameObject.transform.position;
+                    Rigidbody otherRB = coll.gameObject.GetComponentInParent<Rigidbody>();
 
-                if (time2Coll > 0 && time2Coll < shortestTime) {
-                    shortestTime = time2Coll;
-                    firstTarget = otherPos;
-                    firstSep = minSep;
-                    firstDist = dist;
-                    firstRelPos = relPos;
-                    firstRelVel = relVel;
+                    Vector3 relPos = otherPos - transform.position;
+                    Vector3 relVel = otherRB.velocity - rb.velocity;
+                    float relSpd = relVel.magnitude;
+                    float time2Coll = -Vector3.Dot(relPos, relVel) / (relSpd * relSpd);
+
+                    float dist = relPos.magnitude;
+                    float minSep = dist - relSpd * time2Coll;
+                    if (minSep > 2f) {
+                        continue;
+                    }
+
+                    if (time2Coll > 0 && time2Coll < shortestTime) {
+                        shortestTime = time2Coll;
+                        firstTarget = otherPos;
+                        firstSep = minSep;
+                        firstDist = dist;
+                        firstRelPos = relPos;
+                        firstRelVel = relVel;
+                    }
                 }
-
             }
         }
 

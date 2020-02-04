@@ -5,25 +5,23 @@ using UnityEngine;
 public class GameMan : MonoBehaviour
 {
     public static GameMan Instance { get; private set; }
-    public float minX;
-    public float maxX;
-    public float minZ;
-    public float maxZ;
 
     public GameObject PlayerAgent;
-    public GameObject projectileNormalPrefab;
-    public List<GameObject> projectileNormal;
-    public int projectileNomralIndex = -1;
+
     [HideInInspector]
     public GameObject[] playerProjArr;
     public GameObject playerProjParent;
     public GameObject playerProjPrefab;
     private int playerProjIndex = 0;
-    private int ppaLen = 300;
+    private int ppaLen = 200;
 
-    public GameObject testObj;
-    public GameObject testObj2;
-
+    public GameObject enemyProjParent;
+    
+    [HideInInspector]
+    public GameObject[] enemyProjArr_Normal;
+    public GameObject enemyProjPrefab_Normal;
+    private int enemyProjIndex_Normal = 0;
+    private int epaLen_Normal = 300;
 
     private void Awake() {
         if (Instance == null)
@@ -43,12 +41,12 @@ public class GameMan : MonoBehaviour
             playerProjArr[i] = Instantiate(playerProjPrefab, playerProjParent.transform);
             playerProjArr[i].SetActive(false);
         }
-        
-        for (int i = 0; i < 10; i++)
+
+        enemyProjArr_Normal = new GameObject[epaLen_Normal];
+        for (int i = 0; i < epaLen_Normal; i++)
         {
-            GameObject projectileObj  = Instantiate(projectileNormalPrefab);
-            projectileObj.SetActive(false);
-            projectileNormal.Add(projectileObj);
+            enemyProjArr_Normal[i] = Instantiate(enemyProjPrefab_Normal, enemyProjParent.transform);
+            enemyProjArr_Normal[i].SetActive(false);
         }
     }
 
@@ -60,26 +58,19 @@ public class GameMan : MonoBehaviour
         return playerProjArr[playerProjIndex];
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            testObj.GetComponent<Enemy>().StartFire();
-            testObj2.GetComponent<Enemy>().StartFire();
-        }
-    }
-
-    public int GetEnemyProjectile(int projectileType)
+    public GameObject GetEnemyProj(int projectileType)
     {
         switch (projectileType)
         {
             case 0: //Normal Projectile
-                projectileNomralIndex++;
-                return projectileNomralIndex;
-            case 1:
-                return 0;
+                enemyProjIndex_Normal++;
+                if (enemyProjIndex_Normal >= epaLen_Normal) {
+                    enemyProjIndex_Normal = 0;
+                }
+                return enemyProjArr_Normal[enemyProjIndex_Normal];
+            default:
+                return null;
         }
-        return -1;
     }
 
 }

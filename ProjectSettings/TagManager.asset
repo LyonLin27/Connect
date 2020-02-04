@@ -17,8 +17,8 @@ TagManager:
   - Agent
   - Wall
   - PlayerProj
-  - 
-  - 
+  - Enemy
+  - EnemyProj
   - 
   - 
   - 
