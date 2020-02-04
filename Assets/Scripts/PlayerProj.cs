@@ -15,6 +15,7 @@ public class PlayerProj : MonoBehaviour {
     private void OnEnable() {
         rb = GetComponent<Rigidbody>();
         rb.velocity = transform.forward * speed;
+        StartCoroutine(DisableAfterTime(3f));
     }
 
     private void OnCollisionEnter(Collision collision) {
