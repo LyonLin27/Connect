@@ -16,6 +16,7 @@ public class AgentController : MonoBehaviour
     private Rigidbody rb;
 
     private ParticleSystem wakeParticle;
+    private ParticleSystem deathParticle;
 
     public bool connected = false;
     public bool isPlayer;
@@ -55,6 +56,7 @@ public class AgentController : MonoBehaviour
         pi = new PlayerInput();
         mat = model.GetComponent<MeshRenderer>().material;
         wakeParticle = transform.Find("WakeParticle").GetComponent<ParticleSystem>();
+        deathParticle = transform.Find("DeathParticle").GetComponent<ParticleSystem>();
 
 
         ai.target = gm.PlayerAgent;
@@ -82,7 +84,9 @@ public class AgentController : MonoBehaviour
                 HandleMove_AI();
             }
             else {
-                if (Vector3.Distance(transform.position, gm.PlayerAgent.transform.position) < connectDist) {
+                if (Vector3.Distance(transform.position, gm.PlayerAgent.transform.position) < connectDist 
+                    && gm.PlayerAgent.GetComponent<AgentController>().connected) {
+
                     // wake up
                     mat.SetColor("_BaseColor", Color.Lerp(mat.GetColor("_BaseColor"), playerBlue, 0.1f));
                     model.transform.Rotate(0f, 10f, 0f);
@@ -92,6 +96,9 @@ public class AgentController : MonoBehaviour
                         mat.SetColor("_BaseColor", playerBlue);
                         gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - gm.PlayerAgent.transform.position.y, 0f);
                         wakeParticle.Play();
+                        gm.Agents.Add(gameObject);
+                        UpdateFollowTarget();
+                        print(gameObject.name + " connected");
                         connected = true;
                     }
                 }
@@ -105,6 +112,7 @@ public class AgentController : MonoBehaviour
     }
 
     private void HandleMove_Player() {
+        if (!connected) return;
         //move
         Vector2 moveVec = Square2Circle(moveInput);
         rb.velocity = Vector3.Lerp(rb.velocity, ToVec3(moveVec)*speed, 0.2f);
@@ -183,6 +191,31 @@ public class AgentController : MonoBehaviour
 
         Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(model.transform.position);
         model.transform.forward = ToVec3((aimInput - playerScreenPos).normalized);
+    }
+
+    private void OnCollisionEnter(Collision coll) {
+        if (coll.gameObject.layer == LayerMask.NameToLayer("EnemyProj")) {
+            connected = false;
+            mat.SetColor("_BaseColor", Color.grey);
+            gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - 0.25f, 0f);
+            gm.Agents.Remove(gameObject);
+            deathParticle.Play();
+
+
+            if (isPlayer) {
+                StartCoroutine("SwitchPlayerAfterTime", 1f);
+            }
+        }
+    }
+
+    public void UpdateFollowTarget() {
+        ai.target = gm.PlayerAgent;
+    }
+
+    IEnumerator SwitchPlayerAfterTime(float time) {
+        yield return new WaitForSeconds(time);
+        isPlayer = false;
+        gm.SwitchPlayer();
     }
 
     protected Vector2 Square2Circle(Vector2 input) {

@@ -39,6 +39,17 @@ public class EnemyProjectile : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    private void OnCollisionEnter(Collision coll) {
+        if (coll.gameObject.layer == LayerMask.NameToLayer("Agent") ||
+            coll.gameObject.layer == LayerMask.NameToLayer("PlayerProj")) {
+            
+            GameObject ptc = GameMan.Instance.GetProjPtcRd();
+            ptc.transform.position = transform.position;
+            ptc.GetComponent<ParticleSystem>().Play();
+            FinishWork();
+        }
+    }
+
     IEnumerator DisableAfterTime(float time) {
         yield return new WaitForSeconds(time);
         FinishWork();
