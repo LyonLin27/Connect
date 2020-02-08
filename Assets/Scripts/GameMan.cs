@@ -107,6 +107,14 @@ public class GameMan : MonoBehaviour
         bonfire.Activate();
     }
 
+    public void OnRetry() {
+        Vector3 bonfirePos = LastBonfire.transform.position;
+        float playerY = PlayerAgent.transform.position.y;
+        PlayerAgent.transform.position = new Vector3(bonfirePos.x, playerY, bonfirePos.z - 3f);
+        PlayerAgent.GetComponent<AgentController>().ReviveAsPlayer();
+        GameOverUI.SetActive(false);
+    }
+
     public GameObject GetPlayerProj() {
         playerProjIndex++;
         if (playerProjIndex >= ppaLen) {
