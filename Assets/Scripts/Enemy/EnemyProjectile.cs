@@ -11,13 +11,13 @@ public class EnemyProjectile : MonoBehaviour
     public float lifeTime = 5f;
 
     // Start is called before the first frame update
-    void Awake()
+    protected void Awake()
     {
         gameMan = GameMan.Instance;
         rb = GetComponent<Rigidbody>();
     }
 
-    private void Update() {
+    protected virtual void Update() {
         if(working)
             Work();
     }
@@ -39,7 +39,7 @@ public class EnemyProjectile : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    private void OnCollisionEnter(Collision coll) {
+    protected void OnCollisionEnter(Collision coll) {
         if (coll.gameObject.layer == LayerMask.NameToLayer("Agent") ||
             coll.gameObject.layer == LayerMask.NameToLayer("PlayerProj")) {
             
@@ -50,7 +50,7 @@ public class EnemyProjectile : MonoBehaviour
         }
     }
 
-    IEnumerator DisableAfterTime(float time) {
+    protected IEnumerator DisableAfterTime(float time) {
         yield return new WaitForSeconds(time);
         FinishWork();
     }
