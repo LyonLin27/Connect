@@ -6,6 +6,7 @@ TagManager:
   tags:
   - GameMan
   - Projectile
+  - ProjectileTracer
   layers:
   - Default
   - TransparentFX

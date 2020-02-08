@@ -23,30 +23,58 @@ public class ForceField : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Projectile")
+        if (projectileType == 0)
         {
-            if (projectileType == 0)
+            if (other.gameObject.tag == "Projectile")
             {
                 other.gameObject.GetComponent<Rigidbody>().velocity *= (1f + power);
             }
-            else
+            else if (other.gameObject.tag == "ProjectileTracer")
+            {
+                other.gameObject.GetComponent<EnemyProjectileTracer>().tracerSpeed *= (1f + power);
+            }
+            
+        }
+        else
+        {
+            if (other.gameObject.tag == "Projectile")
             {
                 other.gameObject.GetComponent<Rigidbody>().velocity *= (1f - power);
             }
+            else if (other.gameObject.tag == "ProjectileTracer")
+            {
+                other.gameObject.GetComponent<EnemyProjectileTracer>().tracerSpeed *= (1f - power);
+            }
+
         }
+
+
     }
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag == "Projectile")
+        if (projectileType == 0)
         {
-            if (projectileType == 0)
+            if (other.gameObject.tag == "Projectile")
             {
                 other.gameObject.GetComponent<Rigidbody>().velocity /= (1f + power);
             }
-            else
+            else if (other.gameObject.tag == "ProjectileTracer")
+            {
+                other.gameObject.GetComponent<EnemyProjectileTracer>().tracerSpeed /= (1f + power);
+            }
+
+        }
+        else
+        {
+            if (other.gameObject.tag == "Projectile")
             {
                 other.gameObject.GetComponent<Rigidbody>().velocity /= (1f - power);
             }
+            else if (other.gameObject.tag == "ProjectileTracer")
+            {
+                other.gameObject.GetComponent<EnemyProjectileTracer>().tracerSpeed /= (1f - power);
+            }
+
         }
     }
    
