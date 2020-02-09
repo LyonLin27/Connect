@@ -10,6 +10,13 @@ public class GameMan : MonoBehaviour
     [HideInInspector]
     public List<GameObject> Agents;
 
+    public Bonfire LastBonfire;
+    [HideInInspector]
+    public List<Bonfire> Bonfires;
+    [HideInInspector]
+    public List<EnemyRoom> EnemyRooms;
+    public GameObject GameOverUI;
+
     [HideInInspector]
     public GameObject[] playerProjArr;
     public GameObject playerProjParent;
@@ -47,6 +54,9 @@ public class GameMan : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        Bonfires = new List<Bonfire>();
+        EnemyRooms = new List<EnemyRoom>();
     }
 
     private void Start() {
@@ -79,6 +89,7 @@ public class GameMan : MonoBehaviour
 
     public void SwitchPlayer() {
         if (Agents.Count == 0) {
+            GameOverUI.SetActive(true);
             print("Game Over");
             return;
         }
@@ -89,6 +100,30 @@ public class GameMan : MonoBehaviour
             agent.GetComponent<AgentController>().UpdateFollowTarget();
         }
         Camera.main.GetComponent<CameraController>().SwitchPlayer(PlayerAgent);
+    }
+
+    public void ActivateBonfire(Bonfire bonfire) {
+        LastBonfire = bonfire;
+        foreach(Bonfire bf in Bonfires) {
+            bf.Deactivate();
+        }
+        bonfire.Activate();
+
+        foreach (EnemyRoom er in EnemyRooms) {
+            er.ResetEnemy();
+        }
+    }
+
+    public void OnRetry() {
+        Vector3 bonfirePos = LastBonfire.transform.position;
+        float playerY = PlayerAgent.transform.position.y;
+        PlayerAgent.transform.position = new Vector3(bonfirePos.x, playerY, bonfirePos.z - 3f);
+        PlayerAgent.GetComponent<AgentController>().ReviveAsPlayer();
+        GameOverUI.SetActive(false);
+
+        foreach (EnemyRoom er in EnemyRooms) {
+            er.ResetEnemy();
+        }
     }
 
     public GameObject GetPlayerProj() {

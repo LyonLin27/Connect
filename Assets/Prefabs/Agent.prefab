@@ -152,7 +152,7 @@ MonoBehaviour:
   agent: {fileID: 0}
   target: {fileID: 0}
   maxPrediction: 10
-  maxAcceleration: 30
+  maxAcceleration: 50
   maxSpeed: 12
   targetRadiusL: 2
   slowRadiusL: 5
@@ -335,7 +335,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 6
+  m_Radius: 4
   m_Height: 15
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -481,6 +481,41 @@ PrefabInstance:
       propertyPath: InitialModule.gravityModifier.scalar
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 2599279731411584077, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
+        type: 3}
+      propertyPath: InitialModule.rotation3D
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2599279731411584077, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
+        type: 3}
+      propertyPath: InitialModule.startRotationX.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2599279731411584077, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
+        type: 3}
+      propertyPath: InitialModule.startRotationX.scalar
+      value: 3.1415927
+      objectReference: {fileID: 0}
+    - target: {fileID: 2599279731411584077, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
+        type: 3}
+      propertyPath: InitialModule.startRotationY.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2599279731411584077, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
+        type: 3}
+      propertyPath: InitialModule.startRotationY.scalar
+      value: 3.1415927
+      objectReference: {fileID: 0}
+    - target: {fileID: 2599279731411584077, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
+        type: 3}
+      propertyPath: InitialModule.startRotation.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2599279731411584077, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
+        type: 3}
+      propertyPath: InitialModule.startRotation.scalar
+      value: 3.1415927
+      objectReference: {fileID: 0}
     - target: {fileID: 3676170469914865389, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
         type: 3}
       propertyPath: m_Name
@@ -561,6 +596,41 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5495668637065651184}
     m_Modifications:
+    - target: {fileID: 2599279731411584077, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
+        type: 3}
+      propertyPath: InitialModule.rotation3D
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2599279731411584077, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
+        type: 3}
+      propertyPath: InitialModule.startRotationX.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2599279731411584077, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
+        type: 3}
+      propertyPath: InitialModule.startRotationY.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2599279731411584077, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
+        type: 3}
+      propertyPath: InitialModule.startRotation.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 2599279731411584077, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
+        type: 3}
+      propertyPath: InitialModule.startRotationX.scalar
+      value: 3.1415927
+      objectReference: {fileID: 0}
+    - target: {fileID: 2599279731411584077, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
+        type: 3}
+      propertyPath: InitialModule.startRotationY.scalar
+      value: 3.1415927
+      objectReference: {fileID: 0}
+    - target: {fileID: 2599279731411584077, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
+        type: 3}
+      propertyPath: InitialModule.startRotation.scalar
+      value: 3.1415927
+      objectReference: {fileID: 0}
     - target: {fileID: 3676170469914865389, guid: f3a35fc3ad9bb88409ba8260d3cbd1b6,
         type: 3}
       propertyPath: m_Name

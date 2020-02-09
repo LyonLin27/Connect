@@ -36,6 +36,8 @@ public class AgentController : MonoBehaviour
     private Material mat;
     private Color playerBlue = new Color(0f, 0.589f, 1f);
 
+    private bool playerReviving = false;
+
     //ai var
     // For speed 
     private Vector3 position;        // local pointer to the RigidBody's Location vector
@@ -76,8 +78,26 @@ public class AgentController : MonoBehaviour
 
     private void FixedUpdate() {
         if (isPlayer) {
-            HandleMove_Player();
-            model.GetComponent<MeshRenderer>().material.color = Color.Lerp(model.GetComponent<MeshRenderer>().material.color, Color.red, 0.1f);
+            if (playerReviving) {
+                mat.SetColor("_BaseColor", Color.Lerp(mat.GetColor("_BaseColor"), playerBlue, 0.1f));
+                model.transform.Rotate(0f, 10f, 0f);
+                gameObject.transform.Translate(0f, Time.fixedDeltaTime, 0f);
+
+                if (gameObject.transform.position.y > 1.23f) {
+                    mat.SetColor("_BaseColor", playerBlue);
+                    gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - 1.23f, 0f);
+                    wakeParticle.Play();
+                    UpdateFollowTarget();
+                    print(gameObject.name + " connected");
+                    connected = true;
+                    playerReviving = false;
+                }
+            }
+            else {
+                HandleMove_Player();
+                model.GetComponent<MeshRenderer>().material.color = Color.Lerp(model.GetComponent<MeshRenderer>().material.color, Color.red, 0.1f);
+            }
+
         }
         else {
             if (connected) {
@@ -111,6 +131,12 @@ public class AgentController : MonoBehaviour
         
     }
 
+    public void ReviveAsPlayer() {
+        playerReviving = true;
+        gm.Agents.Add(gameObject);
+        gm.SwitchPlayer();
+    }
+
     private void HandleMove_Player() {
         if (!connected) return;
         //move
@@ -141,14 +167,13 @@ public class AgentController : MonoBehaviour
             proj.SetActive(true);
         }
         else {
+            lastShootTime = Time.time;
             float randomFloat = Random.value/2f;
             StartCoroutine("ShootAfterTime", randomFloat);
         }
     }
     IEnumerator ShootAfterTime(float time) {
         yield return new WaitForSeconds(time);
-
-        lastShootTime = Time.time;
         GameObject proj = gm.GetPlayerProj();
         proj.transform.position = model.transform.position;
         proj.transform.rotation = model.transform.rotation;
@@ -184,6 +209,7 @@ public class AgentController : MonoBehaviour
         rb.velocity = Vector3.Lerp(rb.velocity, velocity, 0.2f);
         if (rb.velocity.magnitude > speedLimit) {
             rb.velocity = rb.velocity.normalized * speedLimit;
+            velocity = rb.velocity;
         }
         position = rb.position;
         //rb.MoveRotation(Quaternion.Euler(new Vector3(0, Mathf.Rad2Deg * orientation, 0)));

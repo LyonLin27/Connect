@@ -10,11 +10,15 @@ public class EnemyProjectile : MonoBehaviour
     public bool working = false;
     public float lifeTime = 5f;
 
+    private Vector3 defaultScale;
+    private bool deactivating = false;
+
     // Start is called before the first frame update
     protected void Awake()
     {
         gameMan = GameMan.Instance;
         rb = GetComponent<Rigidbody>();
+        defaultScale = transform.localScale;
     }
 
     protected virtual void Update() {
@@ -24,13 +28,18 @@ public class EnemyProjectile : MonoBehaviour
 
     public virtual void StartWork()
     {
+        deactivating = false;
         working = true;
+        transform.localScale = defaultScale;
         gameObject.SetActive(true);
         StartCoroutine("DisableAfterTime", lifeTime);
+        StartCoroutine("ShrinkAfterTime", lifeTime-1f);
     }
 
     protected virtual void Work() {
-    
+        if (deactivating) {
+            transform.localScale = transform.localScale - defaultScale * Time.deltaTime;
+        }
     }
 
     public virtual void FinishWork()
@@ -53,5 +62,10 @@ public class EnemyProjectile : MonoBehaviour
     protected IEnumerator DisableAfterTime(float time) {
         yield return new WaitForSeconds(time);
         FinishWork();
+    }
+
+    protected IEnumerator ShrinkAfterTime(float time) {
+        yield return new WaitForSeconds(time);
+        deactivating = true;
     }
 }

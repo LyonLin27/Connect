@@ -6,13 +6,20 @@ public class Enemy : MonoBehaviour
 {
     protected GameMan gameMan;
     protected Rigidbody rb;
+    protected bool active = false;
+    protected Vector3 startPos;
+    protected Quaternion startRot;
 
-    public int hp = 5;
+    public int hp_max = 5;
+    private int hp;
     // Start is called before the first frame update
     protected virtual void Start()
     {
         gameMan = GameMan.Instance;
         rb = gameObject.GetComponent<Rigidbody>();
+        startPos = transform.position;
+        startRot = transform.rotation;
+        hp = hp_max;
     }
 
     // Update is called once per frame
@@ -36,7 +43,23 @@ public class Enemy : MonoBehaviour
     }
 
     protected virtual void Death() {
-        StopAllCoroutines();
+        active = false;
         gameObject.SetActive(false);
+    }
+
+    public void Activate() {
+        active = true;
+    }
+
+    public void Deactivate() {
+        active = false;
+    }
+
+    public void Reset() {
+        active = false;
+        gameObject.SetActive(true);
+        transform.position = startPos;
+        transform.rotation = startRot;
+        hp = hp_max;
     }
 }
