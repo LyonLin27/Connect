@@ -45,6 +45,18 @@ public class GameMan : MonoBehaviour
     private int projPtcRdIndex = 0;
     private int ppraLen = 20;
 
+    [HideInInspector]
+    public GameObject[] forceFieldRedArr;
+    public GameObject forceFieldRedPrefab;
+    private int forceFieldRedIndex = 0;
+    private int forceFieldRedLen = 20;
+
+    [HideInInspector]
+    public GameObject[] forceFieldBlueArr;
+    public GameObject forceFieldBluePrefab;
+    private int forceFieldBlueIndex = 0;
+    private int forceFieldBlueLen = 20;
+
     private void Awake() {
         if (Instance == null)
         {
@@ -84,6 +96,19 @@ public class GameMan : MonoBehaviour
         projPtcRdArr = new GameObject[ppraLen];
         for (int i = 0; i < ppraLen; i++) {
             projPtcRdArr[i] = Instantiate(projPtcRdPrefab, projPtcParent.transform);
+        }
+
+        forceFieldRedArr = new GameObject[forceFieldRedLen];
+        for (int i = 0; i < forceFieldRedLen; i++)
+        {
+            forceFieldRedArr[i] = Instantiate(forceFieldRedPrefab, projPtcParent.transform);
+            forceFieldRedArr[i].SetActive(false);
+        }
+        forceFieldBlueArr = new GameObject[forceFieldBlueLen];
+        for (int i = 0; i < forceFieldBlueLen; i++)
+        {
+            forceFieldBlueArr[i] = Instantiate(forceFieldBluePrefab, projPtcParent.transform);
+            forceFieldBlueArr[i].SetActive(false);
         }
     }
 
@@ -163,5 +188,25 @@ public class GameMan : MonoBehaviour
             projPtcRdIndex = 0;
         }
         return projPtcRdArr[projPtcRdIndex];
+    }
+
+    public GameObject GetForceFieldRed()
+    {
+        forceFieldRedIndex++;
+        if (forceFieldRedIndex >= forceFieldRedLen)
+        {
+            forceFieldRedIndex = 0;
+        }
+        return forceFieldRedArr[forceFieldRedIndex];
+    }
+
+    public GameObject GetForceFieldBlue()
+    {
+        forceFieldBlueIndex++;
+        if (forceFieldBlueIndex >= forceFieldBlueLen)
+        {
+            forceFieldBlueIndex = 0;
+        }
+        return forceFieldBlueArr[forceFieldBlueIndex];
     }
 }

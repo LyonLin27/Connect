@@ -8,6 +8,7 @@ public class ForceField : MonoBehaviour
     /// 0: increase speed. 1: decrease speed
     /// </summary>
     public int projectileType;
+    public float size = 9f;
     public float power = 0.5f;
     // Start is called before the first frame update
     void Start()
@@ -19,6 +20,28 @@ public class ForceField : MonoBehaviour
     void Update()
     {
         
+    }
+  
+    public IEnumerator ActiveForceField()
+    {
+        transform.localScale = new Vector3(0f, 0f, 0f);
+        while (transform.localScale.x < size)
+        {
+            transform.localScale += new Vector3(1f, 1f, 1f)*Time.deltaTime*0.01f;
+           
+        }
+        yield return null;
+    }
+
+    public IEnumerator DeactiveForceField()
+    {
+        while (transform.localScale.x > 0f)
+        {
+            transform.localScale -= new Vector3(1f, 1f, 1f) * Time.deltaTime;
+            
+        }
+        gameObject.SetActive(false);
+        yield return null;
     }
 
     private void OnTriggerEnter(Collider other)
