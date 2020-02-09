@@ -167,14 +167,13 @@ public class AgentController : MonoBehaviour
             proj.SetActive(true);
         }
         else {
+            lastShootTime = Time.time;
             float randomFloat = Random.value/2f;
             StartCoroutine("ShootAfterTime", randomFloat);
         }
     }
     IEnumerator ShootAfterTime(float time) {
         yield return new WaitForSeconds(time);
-
-        lastShootTime = Time.time;
         GameObject proj = gm.GetPlayerProj();
         proj.transform.position = model.transform.position;
         proj.transform.rotation = model.transform.rotation;
@@ -210,6 +209,7 @@ public class AgentController : MonoBehaviour
         rb.velocity = Vector3.Lerp(rb.velocity, velocity, 0.2f);
         if (rb.velocity.magnitude > speedLimit) {
             rb.velocity = rb.velocity.normalized * speedLimit;
+            velocity = rb.velocity;
         }
         position = rb.position;
         //rb.MoveRotation(Quaternion.Euler(new Vector3(0, Mathf.Rad2Deg * orientation, 0)));

@@ -13,6 +13,8 @@ public class GameMan : MonoBehaviour
     public Bonfire LastBonfire;
     [HideInInspector]
     public List<Bonfire> Bonfires;
+    [HideInInspector]
+    public List<EnemyRoom> EnemyRooms;
     public GameObject GameOverUI;
 
     [HideInInspector]
@@ -54,6 +56,7 @@ public class GameMan : MonoBehaviour
         }
 
         Bonfires = new List<Bonfire>();
+        EnemyRooms = new List<EnemyRoom>();
     }
 
     private void Start() {
@@ -105,6 +108,10 @@ public class GameMan : MonoBehaviour
             bf.Deactivate();
         }
         bonfire.Activate();
+
+        foreach (EnemyRoom er in EnemyRooms) {
+            er.ResetEnemy();
+        }
     }
 
     public void OnRetry() {
@@ -113,6 +120,10 @@ public class GameMan : MonoBehaviour
         PlayerAgent.transform.position = new Vector3(bonfirePos.x, playerY, bonfirePos.z - 3f);
         PlayerAgent.GetComponent<AgentController>().ReviveAsPlayer();
         GameOverUI.SetActive(false);
+
+        foreach (EnemyRoom er in EnemyRooms) {
+            er.ResetEnemy();
+        }
     }
 
     public GameObject GetPlayerProj() {

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2097360127869237254}
   - component: {fileID: 2097360127869237255}
   - component: {fileID: 2097360127869237252}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2097360128016518070}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Torii
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -139,7 +139,7 @@ GameObject:
   - component: {fileID: 2097360128442418667}
   - component: {fileID: 2097360128442418664}
   - component: {fileID: 2097360128442418665}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cube (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -232,7 +232,7 @@ GameObject:
   - component: {fileID: 2097360129309196693}
   - component: {fileID: 2097360129309196690}
   - component: {fileID: 2097360129309196691}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cube (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -325,7 +325,7 @@ GameObject:
   - component: {fileID: 2097360129439023560}
   - component: {fileID: 2097360129439023561}
   - component: {fileID: 2097360129439023606}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cube (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
