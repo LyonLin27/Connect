@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 2138677392}
-  m_IndirectSpecularColor: {r: 0.2850269, g: 0.3713935, b: 0.49601045, a: 1}
+  m_IndirectSpecularColor: {r: 0.28502697, g: 0.37139347, b: 0.49601266, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -13875,6 +13875,18 @@ PrefabInstance:
       propertyPath: GameOverUI
       value: 
       objectReference: {fileID: 170910440}
+    - target: {fileID: 7716172836941580793, guid: 6c1a300cc6bedd14a923fbb815268da4,
+        type: 3}
+      propertyPath: forceFieldBluePrefab
+      value: 
+      objectReference: {fileID: 9133181698286047258, guid: 785c96f88fce4f542bedd8f669d2ec68,
+        type: 3}
+    - target: {fileID: 7716172836941580793, guid: 6c1a300cc6bedd14a923fbb815268da4,
+        type: 3}
+      propertyPath: forceFieldRedPrefab
+      value: 
+      objectReference: {fileID: 3526340014810202624, guid: f05ee34656a9c9845a7d76198f5f4f82,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6c1a300cc6bedd14a923fbb815268da4, type: 3}
 --- !u!1001 &7860812772718113902

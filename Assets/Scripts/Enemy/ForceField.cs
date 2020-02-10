@@ -10,6 +10,8 @@ public class ForceField : MonoBehaviour
     public int projectileType;
     public float size = 9f;
     public float power = 0.5f;
+    bool startActive = false;
+    bool startDeactive = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,31 +21,40 @@ public class ForceField : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+       
+        if (startDeactive == true)
+        {
+            startActive = false;
+            transform.localScale -= new Vector3(1f, 1f, 1f) * Time.deltaTime*1.5f;
+            if (transform.localScale.x <= 0.1f)
+            {
+                startDeactive = false;
+                gameObject.SetActive(false);
+
+            }
+        }
+        else if (startActive == true)
+        {
+            transform.localScale += new Vector3(1f, 1f, 1f) * Time.deltaTime*1.5f;
+            if (transform.localScale.x >= size)
+            {
+                startActive = false;
+
+            }
+        }
     }
   
-    public IEnumerator ActiveForceField()
+    public void ActiveForceField()
     {
         transform.localScale = new Vector3(0f, 0f, 0f);
-        while (transform.localScale.x < size)
-        {
-            transform.localScale += new Vector3(1f, 1f, 1f)*Time.deltaTime*0.01f;
-           
-        }
-        yield return null;
+        startActive = true;
     }
-
-    public IEnumerator DeactiveForceField()
+    public void DeactiveForceField()
     {
-        while (transform.localScale.x > 0f)
-        {
-            transform.localScale -= new Vector3(1f, 1f, 1f) * Time.deltaTime;
-            
-        }
-        gameObject.SetActive(false);
-        yield return null;
+        startDeactive = true;
     }
 
+  
     private void OnTriggerEnter(Collider other)
     {
         if (projectileType == 0)
