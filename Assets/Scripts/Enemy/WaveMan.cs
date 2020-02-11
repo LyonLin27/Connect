@@ -19,10 +19,12 @@ public class WaveMan : MonoBehaviour
         enemyList = new List<Enemy>();
         waveTxt.CrossFadeAlpha(0f, 1f, true);
     }
+
     private void Update() {
         foreach (Enemy enemy in enemyList) {
             if (!enemy.gameObject.activeInHierarchy) {
                 enemyList.Remove(enemy);
+                Destroy(enemy.gameObject);
                 break;
             }
         }
@@ -61,6 +63,20 @@ public class WaveMan : MonoBehaviour
             if (point == WaveSpawnPoints[1]) continue;
             yield return new WaitForSeconds(0.5f);
             GameObject enemy = Instantiate(enemyPrefab1, point.position, point.rotation);
+            enemyList.Add(enemy.GetComponent<Enemy>());
+        }
+        waveEnd = true;
+    }
+
+    IEnumerator Wave3() {
+        yield return new WaitForSeconds(2f);
+        Transform[] spawnPoints = WaveSpawnPoints[2].GetComponentsInChildren<Transform>();
+        foreach (Transform point in spawnPoints) {
+            if (point == WaveSpawnPoints[2]) continue;
+            yield return new WaitForSeconds(0.5f);
+            GameObject enemy = Instantiate(enemyPrefab1, point.position, point.rotation);
+            enemy.GetComponent<EnemyType1>().hp_max = 20;
+            enemy.GetComponent<EnemyType1>().fireCD = 0.2f;
             enemyList.Add(enemy.GetComponent<Enemy>());
         }
         waveEnd = true;

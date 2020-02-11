@@ -21,7 +21,6 @@ public class AgentController : MonoBehaviour
     public bool connected = false;
     public bool isPlayer;
     public int team = 0;
-    public int hp = 3;
     public float speed = 10f;
     public float speedLimit = 15f;
 

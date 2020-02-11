@@ -53,7 +53,7 @@ public class Enemy : MonoBehaviour
             hp -= coll.gameObject.GetComponent<PlayerProj>().dmg;
         }
         if (hp <= 0) {
-            Death();
+            StartCoroutine("Outro");
         }
     }
 
@@ -81,10 +81,18 @@ public class Enemy : MonoBehaviour
     protected virtual IEnumerator Intro() {
         GetComponent<MeshRenderer>().enabled = false;
         introPtc.Play();
-        print(name);
         yield return new WaitForSeconds(2);
 
         active = true;
+        hp = hp_max;
         GetComponent<MeshRenderer>().enabled = true;
+    }
+
+    protected virtual IEnumerator Outro() {
+        active = false;
+        GetComponent<MeshRenderer>().enabled = false;
+        outroPtc.Play();
+        yield return new WaitForSeconds(2);
+        Death();
     }
 }
