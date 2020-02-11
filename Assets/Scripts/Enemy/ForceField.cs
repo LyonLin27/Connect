@@ -59,7 +59,7 @@ public class ForceField : MonoBehaviour
     {
         if (projectileType == 0)
         {
-            if (other.gameObject.tag == "Projectile")
+            if (other.gameObject.tag == "Projectile"|| other.gameObject.tag == "ProjectileImmune")
             {
                 other.gameObject.GetComponent<Rigidbody>().velocity *= (1f + power);
             }
@@ -71,7 +71,7 @@ public class ForceField : MonoBehaviour
         }
         else
         {
-            if (other.gameObject.tag == "Projectile")
+            if (other.gameObject.tag == "Projectile" || other.gameObject.tag == "ProjectileImmune")
             {
                 other.gameObject.GetComponent<Rigidbody>().velocity *= (1f - power);
             }
@@ -88,7 +88,7 @@ public class ForceField : MonoBehaviour
     {
         if (projectileType == 0)
         {
-            if (other.gameObject.tag == "Projectile")
+            if (other.gameObject.tag == "Projectile" || other.gameObject.tag == "ProjectileImmune")
             {
                 other.gameObject.GetComponent<Rigidbody>().velocity /= (1f + power);
             }
@@ -100,7 +100,7 @@ public class ForceField : MonoBehaviour
         }
         else
         {
-            if (other.gameObject.tag == "Projectile")
+            if (other.gameObject.tag == "Projectile" || other.gameObject.tag == "ProjectileImmune")
             {
                 other.gameObject.GetComponent<Rigidbody>().velocity /= (1f - power);
             }

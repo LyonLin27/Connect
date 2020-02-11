@@ -69,7 +69,7 @@ public class GameMan : MonoBehaviour
     public GameObject[] projImmuneArr;
     public GameObject projImmunePrefab;
     private int projImmuneIndex = 0;
-    private int projImmuneLen = 30;
+    private int projImmuneLen = 45;
 
     [HideInInspector]
     public GameObject[] enemy2Arr;

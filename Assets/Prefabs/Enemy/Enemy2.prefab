@@ -96,12 +96,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb8bebd6a092ea144af49e00ff3b2f4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp_max: 5
-  hp: 5
-  fireCD: 1
+  hp_max: 3
+  hp: 3
+  fireCD: 2
   projectileSpeed: 0
   rotSpd: 10
-  runTime: 0
 --- !u!65 &982537851855398875
 BoxCollider:
   m_ObjectHideFlags: 0

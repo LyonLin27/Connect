@@ -90,17 +90,32 @@ public class EnemyFinalBoss : Enemy
     }
     public IEnumerator Fight()
     {
+        
+        
         while (true)
         {
-            yield return new WaitForSeconds(1f);
-            StartCoroutine(WeaponSummonEnemy());
+            yield return new WaitForSeconds(4f);
+            StartCoroutine(Weapon1());
             yield return new WaitForSeconds(6f);
             StartCoroutine(SummonForceField());
+            StartCoroutine(WeaponSummonEnemy());
             yield return new WaitForSeconds(12f);
             stat1Weapon1 = false;
             StartCoroutine(Weapon2());
             yield return new WaitForSeconds(12f);
             stat1Weapon2 = false;
+            allowMovement = false;
+            yield return new WaitForSeconds(5f);
+            
+            StartCoroutine(WeaponImminue());
+            yield return new WaitForSeconds(7f);
+            stat1BlueField1.GetComponent<ForceField>().DeactiveForceField();
+            stat1BlueField2.GetComponent<ForceField>().DeactiveForceField();
+            stat1RedField1.GetComponent<ForceField>().DeactiveForceField();
+            stat1RedField2.GetComponent<ForceField>().DeactiveForceField();
+            movement = true;
+            allowMovement = true;
+
         }
         
     }
@@ -123,7 +138,7 @@ public class EnemyFinalBoss : Enemy
     {
         while (stat1Weapon1)
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 3; i++)
             {
                 GameObject proj = gameMan.GetEnemyProj(0);
                 proj.transform.position = transform.position;
@@ -132,20 +147,15 @@ public class EnemyFinalBoss : Enemy
                 switch (i)
                 {
                     case 0:
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-1f, 0f, -1f).normalized * 5f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-1f, 0f, -1f).normalized * 7f;
                         break;
                     case 1:
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, -1f).normalized * 5f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, -1f).normalized * 7f;
                         break;
                     case 2:
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(1f, 0f, -1f).normalized * 5f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(1f, 0f, -1f).normalized * 7f;
                         break;
-                    case 3:
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-3f, 0f, -1f).normalized * 5f;
-                        break;
-                    case 4:
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(3f, 0f, -1f).normalized * 5f;
-                        break;
+                   
                 }
 
             }
@@ -158,7 +168,7 @@ public class EnemyFinalBoss : Enemy
     {
         while (stat1Weapon2)
         {
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 4; i++)
             {
                 GameObject proj = gameMan.GetEnemyProj(0); 
                 proj.transform.rotation = transform.rotation;
@@ -167,28 +177,21 @@ public class EnemyFinalBoss : Enemy
                 {
                     case 0:
                         proj.transform.position = transform.position + new Vector3(-3f,0f,0f);
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-0.5f, 0f, -1f).normalized * 7f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-0.5f, 0f, -1f).normalized * 5f;
                         break;
                     case 1:
                         proj.transform.position = transform.position + new Vector3(-3f, 0f, 0f);
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0.5f, 0f, -1f).normalized * 7f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0.5f, 0f, -1f).normalized * 5f;
                         break;
                     case 2:
                         proj.transform.position = transform.position + new Vector3(3f, 0f, 0f);
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-0.5f, 0f, -1f).normalized * 7f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-0.5f, 0f, -1f).normalized * 5f;
                         break;
                     case 3:
                         proj.transform.position = transform.position + new Vector3(3f, 0f, 0f);
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0.5f, 0f, -1f).normalized * 7f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0.5f, 0f, -1f).normalized * 5f;
                         break;
-                    case 4:
-                        proj.transform.position = transform.position + new Vector3(-3f, 0f, 0f);
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-2f, 0f, -1f).normalized * 7f;
-                        break;
-                    case 5:
-                        proj.transform.position = transform.position + new Vector3(3f, 0f, 0f);
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(2f, 0f, -1f).normalized * 7f;
-                        break;
+                    
                 }
 
             }
@@ -239,5 +242,22 @@ public class EnemyFinalBoss : Enemy
         yield return null;
 
     }
+    public IEnumerator WeaponImminue()
+    {
     
+        for (int i = 0; i < 40; i++)
+        {
+            GameObject proj = gameMan.GetProjectileImmune();
+            proj.transform.position = transform.position + new Vector3(-10f+0.5f*i, 0f, 0f);
+
+            proj.transform.rotation = transform.rotation;
+            proj.GetComponent<EnemyProjectile>().StartWork();
+            proj.GetComponent<Rigidbody>().velocity = new Vector3(0, 0f, -1f).normalized * 6f;
+            
+
+        }
+        yield return null;
+
+        
+    }
 }
