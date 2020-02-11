@@ -22,7 +22,7 @@ public class EnemyType1 : Enemy
             proj.transform.position = transform.position;
             proj.transform.rotation = transform.rotation;
             proj.GetComponent<EnemyProjectile>().StartWork();
-            proj.GetComponent<Rigidbody>().velocity = projectileSpeed * proj.transform.forward;
+            proj.GetComponent<Rigidbody>().velocity = projectileSpeed * proj.transform.forward; 
         }
     }
 

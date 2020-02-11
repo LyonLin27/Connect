@@ -8,20 +8,58 @@ public class EnemyFinalBoss : Enemy
     GameObject stat1BlueField2;
     GameObject stat1RedField1;
     GameObject stat1RedField2;
+
+    bool movement = true;
+    public bool allowMovement = true;
+    public float bossLeftBoundary;
+    public float bossRightBoundary;
+    public Vector3 bossStartPoint;
+    public float initialBossSpeed;
+    float bossSpeed;
+
     public float stat1SummonFieldCD = 10f;
     public float stat1Weapon1CD = 0.2f;
-
+    public float stat1Weapon2CD = 0.3f;
+    
+   
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
         StartCoroutine(Fight());
+        bossSpeed = initialBossSpeed;
     }
 
     // Update is called once per frame
     protected override void Update()
     {
         base.Update();
+        rb.velocity = new Vector3(bossSpeed, 0f, 0f);
+        if (movement)
+        {
+            if (transform.position.x<= bossStartPoint.x+bossLeftBoundary)
+            {
+                bossSpeed = initialBossSpeed;
+            }
+            else if (transform.position.x >= bossStartPoint.x + bossRightBoundary)
+            {
+                bossSpeed = -initialBossSpeed;
+            }
+            else if (allowMovement == false)
+            {
+                if (Vector3.Distance(transform.position, bossStartPoint) <= 0.1f)
+                {
+                    bossSpeed = 0;
+                    movement = false;
+                }
+            }
+        }
+    }
+    public void StartMove()
+    {
+        bossSpeed = initialBossSpeed;
+        movement = true;
+        allowMovement = true;
     }
     public GameObject ActiveForceFieldRed(Vector3 position)
     {
@@ -42,10 +80,11 @@ public class EnemyFinalBoss : Enemy
     }
     public IEnumerator Fight()
     {
-        StartCoroutine(Weapon1());
+        StartCoroutine(Weapon2());
         StartCoroutine(SummonForceField());
         yield return null;
     }
+    
 
     public IEnumerator SummonForceField()
     {
@@ -64,7 +103,7 @@ public class EnemyFinalBoss : Enemy
     {
         while (true)
         {
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 5; i++)
             {
                 GameObject proj = gameMan.GetEnemyProj(0);
                 proj.transform.position = transform.position;
@@ -73,18 +112,67 @@ public class EnemyFinalBoss : Enemy
                 switch (i)
                 {
                     case 0:
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-1f, 0f, -1f).normalized * 3f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-1f, 0f, -1f).normalized * 5f;
                         break;
                     case 1:
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, -1f).normalized * 3f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, -1f).normalized * 5f;
                         break;
                     case 2:
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(1f, 0f, -1f).normalized * 3f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(1f, 0f, -1f).normalized * 5f;
+                        break;
+                    case 3:
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-3f, 0f, -1f).normalized * 5f;
+                        break;
+                    case 4:
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(3f, 0f, -1f).normalized * 5f;
                         break;
                 }
 
             }
             yield return new WaitForSeconds(stat1Weapon1CD);
+
+        }
+    }
+
+    public IEnumerator Weapon2()
+    {
+        while (true)
+        {
+            for (int i = 0; i < 6; i++)
+            {
+                GameObject proj = gameMan.GetEnemyProj(0); 
+                proj.transform.rotation = transform.rotation;
+                proj.GetComponent<EnemyProjectile>().StartWork();
+                switch (i)
+                {
+                    case 0:
+                        proj.transform.position = transform.position + new Vector3(-3f,0f,0f);
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-0.5f, 0f, -1f).normalized * 7f;
+                        break;
+                    case 1:
+                        proj.transform.position = transform.position + new Vector3(-3f, 0f, 0f);
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0.5f, 0f, -1f).normalized * 7f;
+                        break;
+                    case 2:
+                        proj.transform.position = transform.position + new Vector3(3f, 0f, 0f);
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-0.5f, 0f, -1f).normalized * 7f;
+                        break;
+                    case 3:
+                        proj.transform.position = transform.position + new Vector3(3f, 0f, 0f);
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0.5f, 0f, -1f).normalized * 7f;
+                        break;
+                    case 4:
+                        proj.transform.position = transform.position + new Vector3(-3f, 0f, 0f);
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-2f, 0f, -1f).normalized * 7f;
+                        break;
+                    case 5:
+                        proj.transform.position = transform.position + new Vector3(3f, 0f, 0f);
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(2f, 0f, -1f).normalized * 7f;
+                        break;
+                }
+
+            }
+            yield return new WaitForSeconds(stat1Weapon2CD);
 
         }
     }

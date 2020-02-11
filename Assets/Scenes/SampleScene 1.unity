@@ -1060,7 +1060,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1560037981}
   m_LocalRotation: {x: 0.5866163, y: -0.0049142535, z: 0.006152245, w: 0.8098268}
-  m_LocalPosition: {x: -0.03, y: 15.6, z: -4.3}
+  m_LocalPosition: {x: 6.32, y: 15.6, z: -22.12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1073,7 +1073,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1560037981}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e7be55485a8d4244baacfe66d02721a4, type: 3}
   m_Name: 
@@ -1881,8 +1881,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4466837755040967972}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.3, y: 0, z: -15}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 6.3, y: 1.14, z: -8.24}
+  m_LocalScale: {x: 6, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 9
@@ -1942,7 +1942,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4466837755040967972}
   serializedVersion: 2
-  m_Mass: 10
+  m_Mass: 10000
   m_Drag: 5
   m_AngularDrag: 0.5
   m_UseGravity: 0
@@ -1997,8 +1997,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hp_max: 1500
+  allowMovement: 1
+  bossLeftBoundary: -3
+  bossRightBoundary: 3
+  bossStartPoint: {x: 6.3, y: 1.14, z: -8.24}
+  initialBossSpeed: 3
   stat1SummonFieldCD: 6
   stat1Weapon1CD: 0.5
+  stat1Weapon2CD: 0.7
 --- !u!1001 &5495668638163443160
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2019,7 +2025,7 @@ PrefabInstance:
     - target: {fileID: 5495668637065651184, guid: 39ebefbd3d68f384db3711bd1abf1fd3,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.23
+      value: 1.14
       objectReference: {fileID: 0}
     - target: {fileID: 5495668637065651184, guid: 39ebefbd3d68f384db3711bd1abf1fd3,
         type: 3}
