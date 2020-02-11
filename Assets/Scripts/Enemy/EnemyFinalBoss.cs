@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class EnemyFinalBoss : Enemy
 {
+   
     GameObject stat1BlueField1;
     GameObject stat1BlueField2;
     GameObject stat1RedField1;
@@ -19,9 +20,11 @@ public class EnemyFinalBoss : Enemy
 
     public float stat1SummonFieldCD = 10f;
     public float stat1Weapon1CD = 0.2f;
+    bool stat1Weapon1 = true;
     public float stat1Weapon2CD = 0.3f;
-    
-   
+    bool stat1Weapon2 = true;
+
+
     // Start is called before the first frame update
     protected override void Start()
     {
@@ -85,8 +88,20 @@ public class EnemyFinalBoss : Enemy
     }
     public IEnumerator Fight()
     {
-        StartCoroutine(Weapon2());
-        StartCoroutine(SummonForceField());
+        while (true)
+        {
+            yield return new WaitForSeconds(1f);
+            StartCoroutine(Weapon1());
+            yield return new WaitForSeconds(6f);
+            StartCoroutine(SummonForceField());
+            yield return new WaitForSeconds(12f);
+            stat1Weapon1 = false;
+            StartCoroutine(Weapon2());
+            yield return new WaitForSeconds(12f);
+            stat1Weapon2 = false;
+        }
+        
+        
         yield return null;
     }
     
@@ -106,7 +121,7 @@ public class EnemyFinalBoss : Enemy
     }
     public IEnumerator Weapon1()
     {
-        while (true)
+        while (stat1Weapon1)
         {
             for (int i = 0; i < 5; i++)
             {
@@ -141,7 +156,7 @@ public class EnemyFinalBoss : Enemy
 
     public IEnumerator Weapon2()
     {
-        while (true)
+        while (stat1Weapon2)
         {
             for (int i = 0; i < 6; i++)
             {
