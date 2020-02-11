@@ -6,12 +6,16 @@ public class Enemy : MonoBehaviour
 {
     protected GameMan gameMan;
     protected Rigidbody rb;
-    protected bool active = false;
+    protected bool active = true;
     protected Vector3 startPos;
     protected Quaternion startRot;
 
-    public int hp_max = 5;
-    private int hp;
+    public float hp_max = 5f;
+    [SerializeField]
+    protected float hp;
+
+    protected Material mat;
+    protected Color startColor;
     // Start is called before the first frame update
     protected virtual void Start()
     {
@@ -20,12 +24,15 @@ public class Enemy : MonoBehaviour
         startPos = transform.position;
         startRot = transform.rotation;
         hp = hp_max;
+
+        mat = GetComponent<MeshRenderer>().material;
     }
 
     // Update is called once per frame
     protected virtual void Update()
     {
-        
+        Color currentColor = new Color(1f * (1-hp/hp_max), startColor.g, startColor.b);
+        mat.SetColor("_BaseColor", currentColor);
     }
 
     public virtual void StartFire()

@@ -16,6 +16,7 @@ public class GameMan : MonoBehaviour
     [HideInInspector]
     public List<EnemyRoom> EnemyRooms;
     public GameObject GameOverUI;
+    public GameObject LevelUpUI;
 
     [HideInInspector]
     public GameObject[] playerProjArr;

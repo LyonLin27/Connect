@@ -18,7 +18,7 @@ public class Bonfire : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if (!active && Vector3.Distance(transform.position, GameMan.Instance.PlayerAgent.transform.position) < 2f) {
+        if (!active && Vector3.Distance(transform.position, GameMan.Instance.PlayerAgent.transform.position) < 3f) {
             GameMan.Instance.ActivateBonfire(this);
         }
     }
@@ -35,5 +35,17 @@ public class Bonfire : MonoBehaviour {
         startP.Stop();
         fireP.Stop();
         smokeP.Stop();
+    }
+
+    private void OnTriggerEnter(Collider other) {
+        if (other.transform.parent.GetComponent<AgentController>() && other.transform.parent.GetComponent<AgentController>().isPlayer) {
+            GameMan.Instance.LevelUpUI.SetActive(true);
+        }
+    }
+
+    private void OnTriggerExit(Collider other) {
+        if (other.transform.parent.GetComponent<AgentController>() && other.transform.parent.GetComponent<AgentController>().isPlayer) {
+            GameMan.Instance.LevelUpUI.SetActive(false);
+        }
     }
 }
