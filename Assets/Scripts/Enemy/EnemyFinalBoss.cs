@@ -93,7 +93,7 @@ public class EnemyFinalBoss : Enemy
         while (true)
         {
             yield return new WaitForSeconds(1f);
-            StartCoroutine(Weapon3());
+            StartCoroutine(WeaponSummonEnemy());
             yield return new WaitForSeconds(6f);
             StartCoroutine(SummonForceField());
             yield return new WaitForSeconds(12f);
@@ -103,8 +103,6 @@ public class EnemyFinalBoss : Enemy
             stat1Weapon2 = false;
         }
         
-        
-        yield return null;
     }
     
 
@@ -212,10 +210,10 @@ public class EnemyFinalBoss : Enemy
                 switch (i)
                 {
                     case 0:
-                        proj.transform.position = transform.position + new Vector3(-3f, 0f, 0f);
+                        proj.transform.position = transform.position + new Vector3(-2.5f, 0f, 0f);
                         break;
                     case 1:
-                        proj.transform.position = transform.position + new Vector3(3f, 0f, 0f);
+                        proj.transform.position = transform.position + new Vector3(2.5f, 0f, 0f);
                         break;
                     
                 }
@@ -225,4 +223,21 @@ public class EnemyFinalBoss : Enemy
 
         }
     }
+
+    public IEnumerator WeaponSummonEnemy()
+    {
+
+        for (int i = 0; i < 2; i++)
+        {
+            GameObject proj = gameMan.GetEnemy2();
+            proj.SetActive(true);
+            proj.transform.position = transform.position + 
+                new Vector3(Random.Range(-9f,9f),0f,Random.Range(-1.5f,-7f));
+            proj.transform.rotation = transform.rotation;
+           
+        }
+        yield return null;
+
+    }
+    
 }

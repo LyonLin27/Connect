@@ -71,6 +71,13 @@ public class GameMan : MonoBehaviour
     private int projImmuneIndex = 0;
     private int projImmuneLen = 30;
 
+    [HideInInspector]
+    public GameObject[] enemy2Arr;
+    public GameObject enemy2Prefab;
+    private int enemy2Index = 0;
+    private int enemy2Len = 30;
+
+
     private void Awake() {
         if (Instance == null)
         {
@@ -137,6 +144,13 @@ public class GameMan : MonoBehaviour
         {
             projImmuneArr[i] = Instantiate(projImmunePrefab, projPtcParent.transform);
             projImmuneArr[i].SetActive(false);
+        }
+
+        enemy2Arr = new GameObject[enemy2Len];
+        for (int i = 0; i < enemy2Len; i++)
+        {
+            enemy2Arr[i] = Instantiate(enemy2Prefab, projPtcParent.transform);
+            enemy2Arr[i].SetActive(false);
         }
     }
 
@@ -258,5 +272,15 @@ public class GameMan : MonoBehaviour
             projImmuneIndex = 0;
         }
         return projImmuneArr[projImmuneIndex];
+    }
+
+    public GameObject GetEnemy2()
+    {
+        enemy2Index++;
+        if (enemy2Index >= enemy2Len)
+        {
+            enemy2Index = 0;
+        }
+        return enemy2Arr[enemy2Index];
     }
 }
