@@ -6,6 +6,8 @@ public class Enemy : MonoBehaviour
 {
     protected GameMan gameMan;
     protected Rigidbody rb;
+    protected ParticleSystem introPtc;
+    protected ParticleSystem outroPtc;
     protected bool active = true;
     protected Vector3 startPos;
     protected Quaternion startRot;
@@ -26,6 +28,12 @@ public class Enemy : MonoBehaviour
         hp = hp_max;
 
         mat = GetComponent<MeshRenderer>().material;
+
+        // for one room level
+        introPtc = transform.Find("introPtc").GetComponent<ParticleSystem>();
+        outroPtc = transform.Find("outroPtc").GetComponent<ParticleSystem>();
+        active = false;
+        StartCoroutine("Intro");
     }
 
     // Update is called once per frame
@@ -68,5 +76,15 @@ public class Enemy : MonoBehaviour
         transform.position = startPos;
         transform.rotation = startRot;
         hp = hp_max;
+    }
+
+    protected virtual IEnumerator Intro() {
+        GetComponent<MeshRenderer>().enabled = false;
+        introPtc.Play();
+        print(name);
+        yield return new WaitForSeconds(2);
+
+        active = true;
+        GetComponent<MeshRenderer>().enabled = true;
     }
 }
