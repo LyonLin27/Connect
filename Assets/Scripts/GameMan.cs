@@ -6,6 +6,7 @@ public class GameMan : MonoBehaviour
 {
     public static GameMan Instance { get; private set; }
 
+    public GameObject AgentPrefab;
     public GameObject PlayerAgent;
     [HideInInspector]
     public List<GameObject> Agents;
@@ -16,6 +17,7 @@ public class GameMan : MonoBehaviour
     [HideInInspector]
     public List<EnemyRoom> EnemyRooms;
     public GameObject GameOverUI;
+    public GameObject LevelUpUI;
 
     [HideInInspector]
     public GameObject[] playerProjArr;
@@ -142,6 +144,8 @@ public class GameMan : MonoBehaviour
     public void OnRetry() {
         Vector3 bonfirePos = LastBonfire.transform.position;
         float playerY = PlayerAgent.transform.position.y;
+        PlayerAgent.GetComponent<AgentController>().isPlayer = false;
+        PlayerAgent = Instantiate(AgentPrefab);
         PlayerAgent.transform.position = new Vector3(bonfirePos.x, playerY, bonfirePos.z - 3f);
         PlayerAgent.GetComponent<AgentController>().ReviveAsPlayer();
         GameOverUI.SetActive(false);

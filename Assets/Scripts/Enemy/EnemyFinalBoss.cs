@@ -25,7 +25,12 @@ public class EnemyFinalBoss : Enemy
     // Start is called before the first frame update
     protected override void Start()
     {
-        base.Start();
+        //base.Start();
+        gameMan = GameMan.Instance;
+        rb = gameObject.GetComponent<Rigidbody>();
+        startPos = transform.position;
+        startRot = transform.rotation;
+        hp = hp_max;
         StartCoroutine(Fight());
         bossSpeed = initialBossSpeed;
     }
@@ -33,7 +38,7 @@ public class EnemyFinalBoss : Enemy
     // Update is called once per frame
     protected override void Update()
     {
-        base.Update();
+        //base.Update();
         rb.velocity = new Vector3(bossSpeed, 0f, 0f);
         if (movement)
         {
