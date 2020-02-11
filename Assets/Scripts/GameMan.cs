@@ -59,6 +59,18 @@ public class GameMan : MonoBehaviour
     private int forceFieldBlueIndex = 0;
     private int forceFieldBlueLen = 20;
 
+    [HideInInspector]
+    public GameObject[] projTracerArr;
+    public GameObject projTracerPrefab;
+    private int projTracerIndex = 0;
+    private int projTracerLen = 40;
+
+    [HideInInspector]
+    public GameObject[] projImmuneArr;
+    public GameObject projImmunePrefab;
+    private int projImmuneIndex = 0;
+    private int projImmuneLen = 30;
+
     private void Awake() {
         if (Instance == null)
         {
@@ -111,6 +123,20 @@ public class GameMan : MonoBehaviour
         {
             forceFieldBlueArr[i] = Instantiate(forceFieldBluePrefab, projPtcParent.transform);
             forceFieldBlueArr[i].SetActive(false);
+        }
+
+        projTracerArr = new GameObject[projTracerLen];
+        for (int i = 0; i < projTracerLen; i++)
+        {
+            projTracerArr[i] = Instantiate(projTracerPrefab, projPtcParent.transform);
+            projTracerArr[i].SetActive(false);
+        }
+
+        projImmuneArr = new GameObject[projImmuneLen];
+        for (int i = 0; i < projImmuneLen; i++)
+        {
+            projImmuneArr[i] = Instantiate(projImmunePrefab, projPtcParent.transform);
+            projImmuneArr[i].SetActive(false);
         }
     }
 
@@ -212,5 +238,25 @@ public class GameMan : MonoBehaviour
             forceFieldBlueIndex = 0;
         }
         return forceFieldBlueArr[forceFieldBlueIndex];
+    }
+
+    public GameObject GetProjectileTracer()
+    {
+        projTracerIndex++;
+        if (projTracerIndex >= projTracerLen)
+        {
+            projTracerIndex = 0;
+        }
+        return projTracerArr[projTracerIndex];
+    }
+
+    public GameObject GetProjectileImmune()
+    {
+        projImmuneIndex++;
+        if (projImmuneIndex >= projImmuneLen)
+        {
+            projImmuneIndex = 0;
+        }
+        return projImmuneArr[projImmuneIndex];
     }
 }

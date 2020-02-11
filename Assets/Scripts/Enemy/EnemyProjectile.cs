@@ -48,7 +48,7 @@ public class EnemyProjectile : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    protected void OnCollisionEnter(Collision coll) {
+    protected virtual void OnCollisionEnter(Collision coll) {
         if (coll.gameObject.layer == LayerMask.NameToLayer("Agent") ||
             coll.gameObject.layer == LayerMask.NameToLayer("PlayerProj")) {
             

@@ -870,6 +870,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 7138299737484885949, guid: 2a6859da06bdb4d439b68d82ddf3fc3a,
         type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7138299737484885949, guid: 2a6859da06bdb4d439b68d82ddf3fc3a,
+        type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 6bc930049172c6546959c0fee09abe6a, type: 2}
@@ -1997,6 +2002,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hp_max: 1500
+  hp: 0
   allowMovement: 1
   bossLeftBoundary: -3
   bossRightBoundary: 3
@@ -2005,6 +2011,7 @@ MonoBehaviour:
   stat1SummonFieldCD: 6
   stat1Weapon1CD: 0.5
   stat1Weapon2CD: 0.7
+  stat1Weapon3CD: 1
 --- !u!1001 &5495668638163443160
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2157,6 +2164,18 @@ PrefabInstance:
       propertyPath: forceFieldRedPrefab
       value: 
       objectReference: {fileID: 3526340014810202624, guid: f05ee34656a9c9845a7d76198f5f4f82,
+        type: 3}
+    - target: {fileID: 7716172836941580793, guid: 6c1a300cc6bedd14a923fbb815268da4,
+        type: 3}
+      propertyPath: projTracerPrefab
+      value: 
+      objectReference: {fileID: 2756117417202581425, guid: 88067e79334a5bd4b92ff255adff471b,
+        type: 3}
+    - target: {fileID: 7716172836941580793, guid: 6c1a300cc6bedd14a923fbb815268da4,
+        type: 3}
+      propertyPath: projImmunePrefab
+      value: 
+      objectReference: {fileID: 444531629487181973, guid: f001a843e14502a4991265015a712e83,
         type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6c1a300cc6bedd14a923fbb815268da4, type: 3}

@@ -23,6 +23,8 @@ public class EnemyFinalBoss : Enemy
     bool stat1Weapon1 = true;
     public float stat1Weapon2CD = 0.3f;
     bool stat1Weapon2 = true;
+    public float stat1Weapon3CD = 0.3f;
+    bool stat1Weapon3 = true;
 
 
     // Start is called before the first frame update
@@ -91,7 +93,7 @@ public class EnemyFinalBoss : Enemy
         while (true)
         {
             yield return new WaitForSeconds(1f);
-            StartCoroutine(Weapon1());
+            StartCoroutine(Weapon3());
             yield return new WaitForSeconds(6f);
             StartCoroutine(SummonForceField());
             yield return new WaitForSeconds(12f);
@@ -153,7 +155,7 @@ public class EnemyFinalBoss : Enemy
 
         }
     }
-
+    
     public IEnumerator Weapon2()
     {
         while (stat1Weapon2)
@@ -193,6 +195,33 @@ public class EnemyFinalBoss : Enemy
 
             }
             yield return new WaitForSeconds(stat1Weapon2CD);
+
+        }
+    }
+
+    public IEnumerator Weapon3()
+    {
+        while (stat1Weapon1)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                GameObject proj = gameMan.GetProjectileTracer();
+                proj.transform.position = transform.position;
+                proj.transform.rotation = transform.rotation;
+                proj.GetComponent<EnemyProjectile>().StartWork();
+                switch (i)
+                {
+                    case 0:
+                        proj.transform.position = transform.position + new Vector3(-3f, 0f, 0f);
+                        break;
+                    case 1:
+                        proj.transform.position = transform.position + new Vector3(3f, 0f, 0f);
+                        break;
+                    
+                }
+
+            }
+            yield return new WaitForSeconds(stat1Weapon3CD);
 
         }
     }

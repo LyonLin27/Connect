@@ -7,6 +7,7 @@ TagManager:
   - GameMan
   - Projectile
   - ProjectileTracer
+  - ProjectileImmune
   layers:
   - Default
   - TransparentFX
