@@ -2450,7 +2450,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 16.45
+  m_fontSize: 22.6
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -15030,6 +15030,16 @@ PrefabInstance:
       propertyPath: wall
       value: 
       objectReference: {fileID: 884900617345924509}
+    - target: {fileID: 2863061821778733708, guid: f96af201d4bcd754eabf015f2992746d,
+        type: 3}
+      propertyPath: stat1Weapon1CD
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2863061821778733708, guid: f96af201d4bcd754eabf015f2992746d,
+        type: 3}
+      propertyPath: stat1Weapon2CD
+      value: 1.2
+      objectReference: {fileID: 0}
     - target: {fileID: 2863061821778733710, guid: f96af201d4bcd754eabf015f2992746d,
         type: 3}
       propertyPath: m_Name

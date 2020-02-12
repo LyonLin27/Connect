@@ -57,7 +57,11 @@ public class EnemyFinalBoss : Enemy
         StartCoroutine(Fight());
         Camera.main.GetComponent<CameraController>().enabled = false;
         Camera.main.transform.position = cameraPosition;
-       
+        stat1BlueField1 = null;
+        stat1BlueField2 = null;
+        stat1RedField1 = null;
+        stat1RedField2 = null;
+
     }
     // Update is called once per frame
     protected override void Update()

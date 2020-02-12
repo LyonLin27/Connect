@@ -208,7 +208,9 @@ public class GameMan : MonoBehaviour
         bossObj.GetComponentInChildren<EnemyFinalBoss>().StopAllCoroutines();
         bossObj.SetActive(false);
         bossWall.SetActive(false);
+        Camera.main.GetComponent<CameraController>().enabled = true;
         Vector3 bonfirePos = LastBonfire.transform.position;
+        
         float playerY = PlayerAgent.transform.position.y;
         PlayerAgent.GetComponent<AgentController>().isPlayer = false;
         PlayerAgent = Instantiate(AgentPrefab);
@@ -224,6 +226,18 @@ public class GameMan : MonoBehaviour
 
         foreach (GameObject proj in enemyProjArr_Normal) {
             proj.SetActive(false);
+        }
+        foreach (GameObject obj in forceFieldBlueArr)
+        {
+            obj.GetComponent<ForceField>().DeactiveForceField();
+        }
+        foreach (GameObject obj in forceFieldRedArr)
+        {
+            obj.GetComponent<ForceField>().DeactiveForceField();
+        }
+        foreach (GameObject obj in enemy2Arr)
+        {
+            obj.SetActive(false);
         }
     }
 
