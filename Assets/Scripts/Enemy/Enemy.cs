@@ -17,7 +17,7 @@ public class Enemy : MonoBehaviour
     protected float hp;
 
     public int value = 0;
-
+    public float projLife = -1f;
 
 
     protected Material mat;
