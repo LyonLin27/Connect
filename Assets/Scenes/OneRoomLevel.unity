@@ -13739,31 +13739,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2863061821778733708, guid: f96af201d4bcd754eabf015f2992746d,
-        type: 3}
-      propertyPath: hp_max
-      value: 400
-      objectReference: {fileID: 0}
-    - target: {fileID: 2863061821778733708, guid: f96af201d4bcd754eabf015f2992746d,
-        type: 3}
-      propertyPath: hp
-      value: 400
-      objectReference: {fileID: 0}
-    - target: {fileID: 2863061821778733708, guid: f96af201d4bcd754eabf015f2992746d,
-        type: 3}
-      propertyPath: stat1Weapon1CD
-      value: 0.4
-      objectReference: {fileID: 0}
-    - target: {fileID: 2863061821778733708, guid: f96af201d4bcd754eabf015f2992746d,
-        type: 3}
-      propertyPath: stat1Weapon2CD
-      value: 0.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 2863061821778733708, guid: f96af201d4bcd754eabf015f2992746d,
-        type: 3}
-      propertyPath: stat2HP
-      value: 200
-      objectReference: {fileID: 0}
     - target: {fileID: 2863061821778733710, guid: f96af201d4bcd754eabf015f2992746d,
         type: 3}
       propertyPath: m_Name

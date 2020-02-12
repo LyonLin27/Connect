@@ -31,6 +31,10 @@ public class EnemyFinalBoss : Enemy
     int stat2Serious = 0;
     public int stat2HP= 45;
 
+    public MeshRenderer backMesh;
+    public Material blackMaterial;
+    public Material redMaterial;
+    public Material blueMaterial;
 
 
     // Start is called before the first frame update
@@ -38,17 +42,18 @@ public class EnemyFinalBoss : Enemy
     {
         base.Start();
         stat2Fields = new GameObject[20];
-        
+        StartBoss();
     }
     public void StartBoss()
     {
-        StartCoroutine(Fight());
+        bossStartPoint = transform.position;
         bossSpeed = initialBossSpeed;
         phase1 = true;
         hp = hp_max;
         movement = true;
         allowMovement = true;
         stat2Serious = 0;
+        StartCoroutine(Fight());
     }
     // Update is called once per frame
     protected override void Update()
@@ -164,15 +169,17 @@ public class EnemyFinalBoss : Enemy
 
     public IEnumerator SummonForceField()
     {
-      
+        backMesh.material = blueMaterial;
         //Blue First
         stat1BlueField1 = ActiveForceFieldBlue(gameMan.PlayerAgent.transform.position);
         yield return new WaitForSeconds(stat1SummonFieldCD);
         stat1BlueField2 = ActiveForceFieldBlue(gameMan.PlayerAgent.transform.position);
         yield return new WaitForSeconds(stat1SummonFieldCD);
+        backMesh.material = redMaterial;
         stat1RedField1 = ActiveForceFieldRed(gameMan.PlayerAgent.transform.position);
         yield return new WaitForSeconds(stat1SummonFieldCD);
         stat1RedField2 = ActiveForceFieldRed(gameMan.PlayerAgent.transform.position);
+        backMesh.material = blackMaterial;
         yield return null;
     }
     public IEnumerator Weapon1()

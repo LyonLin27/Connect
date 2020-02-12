@@ -15,6 +15,7 @@ public class Enemy : MonoBehaviour
     public float hp_max = 5f;
     [SerializeField]
     protected float hp;
+    
 
 
 
