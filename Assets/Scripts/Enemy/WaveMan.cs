@@ -110,6 +110,7 @@ public class WaveMan : MonoBehaviour
                 break;
         }
         enemy.transform.position = pos;
+        enemy.GetComponent<Enemy>().value = waveNum * 3;
         enemyList.Add(enemy.GetComponent<Enemy>());
 
     }

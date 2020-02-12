@@ -15,6 +15,7 @@ public class Enemy : MonoBehaviour
     public float hp_max = 5f;
     [SerializeField]
     protected float hp;
+    public int value = 0;
 
     protected Material mat;
     protected Color startColor;
@@ -89,6 +90,8 @@ public class Enemy : MonoBehaviour
     }
 
     protected virtual IEnumerator Outro() {
+        if(active)
+            GameMan.Instance.AddMoney(value);
         active = false;
         GetComponent<MeshRenderer>().enabled = false;
         outroPtc.Play();
