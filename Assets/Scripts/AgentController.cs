@@ -17,12 +17,14 @@ public class AgentController : MonoBehaviour
 
     private ParticleSystem wakeParticle;
     private ParticleSystem deathParticle;
+    private GameObject indicator;
 
     public bool connected = false;
     public bool isPlayer;
     public int team = 0;
     public float speed = 10f;
     public float speedLimit = 15f;
+    public int power = 10;
 
     // shoot time
     float lastShootTime = 0f;
@@ -58,7 +60,7 @@ public class AgentController : MonoBehaviour
         mat = model.GetComponent<MeshRenderer>().material;
         wakeParticle = transform.Find("WakeParticle").GetComponent<ParticleSystem>();
         deathParticle = transform.Find("DeathParticle").GetComponent<ParticleSystem>();
-
+        indicator = transform.Find("Indicator").gameObject;
 
         ai.target = gm.PlayerAgent;
         position = rb.position;
@@ -72,6 +74,20 @@ public class AgentController : MonoBehaviour
 
         if (isPlayer) {
             connected = true;
+        }
+    }
+
+    private void Start() {
+        gm.LevelUpUI.GetComponent<LevelUpUI>().Agents.Add(this);
+        gm.LevelUpUI.GetComponent<LevelUpUI>().Sync(this);
+    }
+
+    private void Update() {
+        if (isPlayer && connected) {
+            indicator.SetActive(true);
+        }
+        else {
+            indicator.SetActive(false);
         }
     }
 
@@ -156,6 +172,10 @@ public class AgentController : MonoBehaviour
             return;
         }
 
+        if (GameMan.Instance.LevelUpUI.activeInHierarchy) {
+            return;
+        }
+
         if (isPlayer) {
             lastShootTime = Time.time;
             GameObject proj = gm.GetPlayerProj();
@@ -163,6 +183,7 @@ public class AgentController : MonoBehaviour
             proj.transform.rotation = model.transform.rotation;
             proj.transform.Rotate(0f, Random.value * shootAcc - shootAcc/2f, 0f);
             proj.GetComponent<PlayerProj>().speed = projSpd;
+            proj.GetComponent<PlayerProj>().dmg = power/10f;
             proj.SetActive(true);
         }
         else {
@@ -177,6 +198,7 @@ public class AgentController : MonoBehaviour
         proj.transform.position = model.transform.position;
         proj.transform.rotation = model.transform.rotation;
         proj.GetComponent<PlayerProj>().speed = projSpd;
+        proj.GetComponent<PlayerProj>().dmg = power / 10f;
         proj.transform.Rotate(0f, Random.value * shootAcc - shootAcc / 2f, 0f);
         proj.SetActive(true);
     }

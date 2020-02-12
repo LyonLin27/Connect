@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class GameMan : MonoBehaviour
 {
@@ -18,6 +20,7 @@ public class GameMan : MonoBehaviour
     public List<EnemyRoom> EnemyRooms;
     public GameObject GameOverUI;
     public GameObject LevelUpUI;
+    public WaveMan waveMan;
 
     [HideInInspector]
     public GameObject[] playerProjArr;
@@ -124,9 +127,14 @@ public class GameMan : MonoBehaviour
         PlayerAgent.transform.position = new Vector3(bonfirePos.x, playerY, bonfirePos.z - 3f);
         PlayerAgent.GetComponent<AgentController>().ReviveAsPlayer();
         GameOverUI.SetActive(false);
+        waveMan.OnRetry();
 
         foreach (EnemyRoom er in EnemyRooms) {
             er.ResetEnemy();
+        }
+
+        foreach (GameObject proj in enemyProjArr_Normal) {
+            proj.SetActive(false);
         }
     }
 

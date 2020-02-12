@@ -5,7 +5,7 @@ using UnityEngine;
 public class EnemyTypeAim : Enemy
 {
     public float fireCD;
-    public float projectileSpeed = 14f;
+    public float projectileSpeed = 10f;
     public int ammo = 5;
     public float interval = 0.1f;
     private float lastFireTime = 0f;
