@@ -16,6 +16,7 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     protected float hp;
     public int value = 0;
+    public float projLife = -1f;
 
     protected Material mat;
     protected Color startColor;

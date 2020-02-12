@@ -22,6 +22,9 @@ public class EnemyType1 : Enemy
             GameObject proj = gameMan.GetEnemyProj(0);
             proj.transform.position = transform.position;
             proj.transform.rotation = transform.rotation;
+            if (projLife > 0) {
+                proj.GetComponent<EnemyProjectile>().lifeTime = projLife;
+            }
             proj.GetComponent<EnemyProjectile>().StartWork();
             proj.GetComponent<Rigidbody>().velocity = projectileSpeed * proj.transform.forward;
 
@@ -29,6 +32,9 @@ public class EnemyType1 : Enemy
                 proj = gameMan.GetEnemyProj(0);
                 proj.transform.position = transform.position;
                 proj.transform.rotation = transform.rotation;
+                if (projLife > 0) {
+                    proj.GetComponent<EnemyProjectile>().lifeTime = projLife;
+                }
                 proj.GetComponent<EnemyProjectile>().StartWork();
                 proj.GetComponent<Rigidbody>().velocity = -projectileSpeed * proj.transform.forward;
             }
@@ -37,12 +43,18 @@ public class EnemyType1 : Enemy
                 proj = gameMan.GetEnemyProj(0);
                 proj.transform.position = transform.position;
                 proj.transform.rotation = transform.rotation;
+                if (projLife > 0) {
+                    proj.GetComponent<EnemyProjectile>().lifeTime = projLife;
+                }
                 proj.GetComponent<EnemyProjectile>().StartWork();
                 proj.GetComponent<Rigidbody>().velocity = projectileSpeed * proj.transform.right;
 
                 proj = gameMan.GetEnemyProj(0);
                 proj.transform.position = transform.position;
                 proj.transform.rotation = transform.rotation;
+                if (projLife > 0) {
+                    proj.GetComponent<EnemyProjectile>().lifeTime = projLife;
+                }
                 proj.GetComponent<EnemyProjectile>().StartWork();
                 proj.GetComponent<Rigidbody>().velocity = -projectileSpeed * proj.transform.right;
             }

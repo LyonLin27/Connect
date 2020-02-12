@@ -14,6 +14,10 @@ public class Bonfire : MonoBehaviour {
         startP = transform.Find("StartParticle").GetComponent<ParticleSystem>();
         fireP = transform.Find("FireParticle").GetComponent<ParticleSystem>();
         smokeP = transform.Find("SmokeParticle").GetComponent<ParticleSystem>();
+
+        if (active) {
+            GameMan.Instance.ActivateBonfire(this);
+        }
     }
 
     // Update is called once per frame

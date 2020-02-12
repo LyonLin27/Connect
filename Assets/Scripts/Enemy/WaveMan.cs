@@ -34,10 +34,15 @@ public class WaveMan : MonoBehaviour
                 break;
             }
         }
+        if (currWave >= 10) {
+            return;
+        }
         if (waveEnd && enemyList.Count == 0) {
             waveEnd = false;
             currWave++;
-
+            if (currWave >= 10) {
+                return;
+            }
             StartCoroutine("StartWaveAfterTime", currWave);
         }
         if (closeGate) {
@@ -105,6 +110,42 @@ public class WaveMan : MonoBehaviour
                 enemy.GetComponent<EnemyTypeAim>().fireCD = 4f;
                 enemy.GetComponent<EnemyTypeAim>().interval = 0.1f;
                 break;
+            case 6:
+                enemy = Instantiate(enemyPrefab1);
+                enemy.GetComponent<EnemyType1>().hp_max = 50;
+                enemy.GetComponent<EnemyType1>().fireCD = 0.15f;
+                enemy.GetComponent<EnemyType1>().rotSpd = 30f;
+                break;
+            case 7:
+                if (name.Contains("Aim")) {
+                    enemy = Instantiate(enemyPrefabAim);
+                    enemy.GetComponent<EnemyTypeAim>().hp_max = 30;
+                    enemy.GetComponent<EnemyTypeAim>().fireCD = 3f;
+                    enemy.GetComponent<EnemyTypeAim>().interval = 0.1f;
+                }
+                else {
+                    enemy = Instantiate(enemyPrefab1);
+                    enemy.GetComponent<EnemyType1>().hp_max = 60;
+                    enemy.GetComponent<EnemyType1>().fireCD = 0.15f;
+                    enemy.GetComponent<EnemyType1>().way = 4;
+                    enemy.GetComponent<EnemyType1>().projLife = 5f;
+                }
+                break;
+            case 8:
+                enemy = Instantiate(enemyPrefab1);
+                enemy.GetComponent<EnemyType1>().hp_max = 60;
+                enemy.GetComponent<EnemyType1>().fireCD = 0.1f;
+                enemy.GetComponent<EnemyType1>().way = 4;
+                enemy.GetComponent<EnemyType1>().projLife = 5f;
+                break;
+            case 9:
+                enemy = Instantiate(enemyPrefabAim);
+                enemy.GetComponent<EnemyTypeAim>().hp_max = 70;
+                enemy.GetComponent<EnemyTypeAim>().fireCD = 3f;
+                enemy.GetComponent<EnemyTypeAim>().ammo = 7;
+                enemy.GetComponent<EnemyTypeAim>().interval = 0.1f;
+                enemy.GetComponent<EnemyTypeAim>().projLife = 6f;
+                break;
             default:
                 enemy = Instantiate(enemyPrefab1);
                 break;
@@ -112,7 +153,6 @@ public class WaveMan : MonoBehaviour
         enemy.transform.position = pos;
         enemy.GetComponent<Enemy>().value = waveNum * 3;
         enemyList.Add(enemy.GetComponent<Enemy>());
-
     }
 
     public void OnRetry() {

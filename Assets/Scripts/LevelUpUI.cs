@@ -168,8 +168,8 @@ public class LevelUpUI : MonoBehaviour {
     }
 
     public void OnSkpUp() {
-        if (skp <= 10) {
-            skp = 10;
+        if (skp >= 9) {
+            skp = 9;
             return;
         }
 
@@ -186,6 +186,7 @@ public class LevelUpUI : MonoBehaviour {
         cstCurText.text = cost.ToString();
         foreach (AgentController ac in Agents) {
             GameMan.Instance.waveMan.startWave = skp;
+            GameMan.Instance.waveMan.currWave = skp;
         }
     }
 

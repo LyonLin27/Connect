@@ -28,6 +28,7 @@ public class EnemyProjectile : MonoBehaviour
 
     public virtual void StartWork()
     {
+        StopAllCoroutines();
         deactivating = false;
         working = true;
         transform.localScale = defaultScale;
