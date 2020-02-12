@@ -2381,9 +2381,10 @@ MonoBehaviour:
   bossStartPoint: {x: 6.3, y: 1.14, z: -8.24}
   initialBossSpeed: 3
   stat1SummonFieldCD: 6
-  stat1Weapon1CD: 0.5
-  stat1Weapon2CD: 0.7
+  stat1Weapon1CD: 0.7
+  stat1Weapon2CD: 1.6
   stat1Weapon3CD: 1
+  stat2Anchors: []
 --- !u!1001 &5495668638163443160
 PrefabInstance:
   m_ObjectHideFlags: 0

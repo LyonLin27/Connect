@@ -118,6 +118,8 @@ public class EnemyFinalBoss : Enemy
             stat1RedField1.GetComponent<ForceField>().DeactiveForceField();
             stat1RedField2.GetComponent<ForceField>().DeactiveForceField();
             movement = true;
+            stat1Weapon1 = true;
+            stat1Weapon2 = true;
             allowMovement = true;
 
         }
@@ -249,14 +251,14 @@ public class EnemyFinalBoss : Enemy
     public IEnumerator WeaponImminue()
     {
     
-        for (int i = 0; i < 40; i++)
+        for (int i = 0; i < 20; i++)
         {
             GameObject proj = gameMan.GetProjectileImmune();
-            proj.transform.position = transform.position + new Vector3(-10f+0.5f*i, 0f, 0f);
+            proj.transform.position = transform.position + new Vector3(-10f+1f*i, 0f, 0f);
 
             proj.transform.rotation = transform.rotation;
             proj.GetComponent<EnemyProjectile>().StartWork();
-            proj.GetComponent<Rigidbody>().velocity = new Vector3(0, 0f, -1f).normalized * 6f;
+            proj.GetComponent<Rigidbody>().velocity = new Vector3(0, 0f, -1f).normalized * 3.5f;
             
 
         }
