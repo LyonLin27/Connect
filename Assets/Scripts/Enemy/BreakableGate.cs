@@ -29,4 +29,9 @@ public class BreakableGate : Enemy
         base.Death();
         deathParticle.Play();
     }
+
+    protected override IEnumerator Outro() {
+        yield return new WaitForSeconds(0.2f);
+        Death();
+    }
 }

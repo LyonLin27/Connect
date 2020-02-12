@@ -14,11 +14,16 @@ public class WaveMan : MonoBehaviour
     public Transform WaveSpawnPoints;
     public GameObject enemyPrefab1;
     public GameObject enemyPrefabAim;
+    public Transform frontGate;
+    public Transform frontGateClose;
+    private Vector3 gateStartPos;
+    private bool closeGate = false;
 
     private void Start() {
         currWave = startWave;
         enemyList = new List<Enemy>();
         waveTxt.CrossFadeAlpha(0f, 1f, true);
+        gateStartPos = frontGate.position;
     }
 
     private void Update() {
@@ -34,6 +39,13 @@ public class WaveMan : MonoBehaviour
             currWave++;
 
             StartCoroutine("StartWaveAfterTime", currWave);
+        }
+        if (closeGate) {
+            frontGate.position = Vector3.Lerp(frontGate.position, frontGateClose.position, Time.deltaTime*2f);
+        }
+        if (closeGate && Vector3.Distance(frontGate.position, frontGateClose.position) < 0.1f) {
+            frontGate.position = frontGateClose.position;
+            closeGate = false;
         }
     }
 
@@ -77,7 +89,7 @@ public class WaveMan : MonoBehaviour
                 if (name.Contains("Aim")) {
                     enemy = Instantiate(enemyPrefabAim);
                     enemy.GetComponent<EnemyTypeAim>().hp_max = 20;
-                    enemy.GetComponent<EnemyTypeAim>().fireCD = 3f;
+                    enemy.GetComponent<EnemyTypeAim>().fireCD = 5f;
                     enemy.GetComponent<EnemyTypeAim>().interval = 0.1f;
                 }
                 else {
@@ -88,10 +100,10 @@ public class WaveMan : MonoBehaviour
                 }
                 break;
             case 5:
-                enemy = Instantiate(enemyPrefab1);
-                enemy.GetComponent<EnemyType1>().hp_max = 25;
-                enemy.GetComponent<EnemyType1>().fireCD = 0.4f;
-                enemy.GetComponent<EnemyType1>().way = 2;
+                enemy = Instantiate(enemyPrefabAim);
+                enemy.GetComponent<EnemyTypeAim>().hp_max = 20;
+                enemy.GetComponent<EnemyTypeAim>().fireCD = 4f;
+                enemy.GetComponent<EnemyTypeAim>().interval = 0.1f;
                 break;
             default:
                 enemy = Instantiate(enemyPrefab1);
@@ -102,48 +114,21 @@ public class WaveMan : MonoBehaviour
 
     }
 
-    /**
-    IEnumerator Wave1() {
-        yield return new WaitForSeconds(2f);
-        Transform[] spawnPoints = WaveSpawnPoints[0].GetComponentsInChildren<Transform>();
-        foreach (Transform point in spawnPoints) {
-            if (point == WaveSpawnPoints[0]) continue;
-            yield return new WaitForSeconds(0.5f);
-            GameObject enemy = Instantiate(enemyPrefab1, point.position, point.rotation);
-            enemyList.Add(enemy.GetComponent<Enemy>());
+    public void OnRetry() {
+        currWave = startWave;
+        foreach (Enemy enemy in enemyList) {
+            enemy.gameObject.SetActive(false);
         }
-        waveEnd = true;
+        waveEnd = false;
+        this.GetComponent<Collider>().enabled = true;
+        frontGate.position = gateStartPos;
     }
-
-    IEnumerator Wave2() {
-        yield return new WaitForSeconds(2f);
-        Transform[] spawnPoints = WaveSpawnPoints[1].GetComponentsInChildren<Transform>();
-        foreach (Transform point in spawnPoints) {
-            if (point == WaveSpawnPoints[1]) continue;
-            yield return new WaitForSeconds(0.5f);
-            GameObject enemy = Instantiate(enemyPrefab1, point.position, point.rotation);
-            enemyList.Add(enemy.GetComponent<Enemy>());
-        }
-        waveEnd = true;
-    }
-
-    IEnumerator Wave3() {
-        yield return new WaitForSeconds(2f);
-        Transform[] spawnPoints = WaveSpawnPoints[2].GetComponentsInChildren<Transform>();
-        foreach (Transform point in spawnPoints) {
-            if (point == WaveSpawnPoints[2]) continue;
-            yield return new WaitForSeconds(0.5f);
-            GameObject enemy = Instantiate(enemyPrefab1, point.position, point.rotation);
-            enemy.GetComponent<EnemyType1>().hp_max = 20;
-            enemy.GetComponent<EnemyType1>().fireCD = 0.2f;
-            enemyList.Add(enemy.GetComponent<Enemy>());
-        }
-        waveEnd = true;
-    }**/
 
     private void OnTriggerEnter(Collider other) {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Agent")) {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Agent")
+            && other.GetComponentInParent<AgentController>().isPlayer) {
             waveEnd = true;
+            closeGate = true;
             this.GetComponent<Collider>().enabled = false;
         }
     }

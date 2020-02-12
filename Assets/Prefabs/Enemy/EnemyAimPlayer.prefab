@@ -128,7 +128,7 @@ MonoBehaviour:
   hp_max: 5
   hp: 5
   fireCD: 2
-  projectileSpeed: 14
+  projectileSpeed: 10
   ammo: 5
   interval: 0.1
 --- !u!1001 &2482050368294680207
