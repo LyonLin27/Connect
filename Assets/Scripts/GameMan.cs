@@ -20,6 +20,8 @@ public class GameMan : MonoBehaviour
     public List<EnemyRoom> EnemyRooms;
     public GameObject GameOverUI;
     public GameObject LevelUpUI;
+    public TextMeshProUGUI moneyUI;
+    public int money = 0;
     public WaveMan waveMan;
 
     [HideInInspector]
@@ -155,6 +157,8 @@ public class GameMan : MonoBehaviour
             enemy2Arr[i] = Instantiate(enemy2Prefab, projPtcParent.transform);
             enemy2Arr[i].SetActive(false);
         }
+
+        moneyUI.text = money.ToString();
     }
 
     public void SwitchPlayer() {
@@ -296,5 +300,16 @@ public class GameMan : MonoBehaviour
             enemy2Index = 0;
         }
         return enemy2Arr[enemy2Index];
+    }
+
+    public void AddMoney(int value) {
+        money += value;
+        moneyUI.text = money.ToString();
+    }
+
+    public void SpendMoney(int value) {
+
+        money -= value;
+        moneyUI.text = money.ToString();
     }
 }

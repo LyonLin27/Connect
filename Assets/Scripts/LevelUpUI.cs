@@ -29,7 +29,8 @@ public class LevelUpUI : MonoBehaviour {
     private Button ppdUpBtn;
     private Button skpUpBtn;
 
-    private int cost = 10;
+    private int cost = 5;
+    private int deltaCost = 5;
 
     private void Awake() {
         //Agents = new List<AgentController>();
@@ -71,8 +72,15 @@ public class LevelUpUI : MonoBehaviour {
     }
 
     public void OnPowUp() {
+        if (GameMan.Instance.money >= cost) {
+            GameMan.Instance.SpendMoney(cost);
+        }
+        else {
+            return;
+        }
+
         pow += 2;
-        cost += 2;
+        cost += deltaCost;
         powCurText.text = pow.ToString();
         cstCurText.text = cost.ToString();
         foreach (AgentController ac in Agents) {
@@ -86,8 +94,15 @@ public class LevelUpUI : MonoBehaviour {
             return;
         }
 
+        if (GameMan.Instance.money >= cost) {
+            GameMan.Instance.SpendMoney(cost);
+        }
+        else {
+            return;
+        }
+
         acc += 2;
-        cost += 2;
+        cost += deltaCost;
         accCurText.text = acc.ToString();
         cstCurText.text = cost.ToString();
         foreach (AgentController ac in Agents) {
@@ -101,8 +116,15 @@ public class LevelUpUI : MonoBehaviour {
             return;
         }
 
+        if (GameMan.Instance.money >= cost) {
+            GameMan.Instance.SpendMoney(cost);
+        }
+        else {
+            return;
+        }
+
         frt -= 0.1f;
-        cost += 2;
+        cost += deltaCost;
         frtCurText.text = frt.ToString();
         cstCurText.text = cost.ToString();
         foreach (AgentController ac in Agents) {
@@ -111,8 +133,15 @@ public class LevelUpUI : MonoBehaviour {
     }
 
     public void OnSpdUp() {
+        if (GameMan.Instance.money >= cost) {
+            GameMan.Instance.SpendMoney(cost);
+        }
+        else {
+            return;
+        }
+
         spd += 1;
-        cost += 2;
+        cost += deltaCost;
         spdCurText.text = spd.ToString();
         cstCurText.text = cost.ToString();
         foreach (AgentController ac in Agents) {
@@ -122,8 +151,15 @@ public class LevelUpUI : MonoBehaviour {
     }
 
     public void OnPpdUp() {
+        if (GameMan.Instance.money >= cost) {
+            GameMan.Instance.SpendMoney(cost);
+        }
+        else {
+            return;
+        }
+
         ppd += 2;
-        cost += 2;
+        cost += deltaCost;
         ppdCurText.text = ppd.ToString();
         cstCurText.text = cost.ToString();
         foreach (AgentController ac in Agents) {
@@ -132,8 +168,20 @@ public class LevelUpUI : MonoBehaviour {
     }
 
     public void OnSkpUp() {
+        if (skp <= 10) {
+            skp = 10;
+            return;
+        }
+
+        if (GameMan.Instance.money >= cost) {
+            GameMan.Instance.SpendMoney(cost);
+        }
+        else {
+            return;
+        }
+
         skp += 1;
-        cost += 2;
+        cost += deltaCost;
         skpCurText.text = skp.ToString();
         cstCurText.text = cost.ToString();
         foreach (AgentController ac in Agents) {

@@ -35,6 +35,8 @@ public class EnemyFinalBoss : Enemy
     public Material blackMaterial;
     public Material redMaterial;
     public Material blueMaterial;
+    public Vector3 cameraPosition;
+    public GameObject wall;
 
 
     // Start is called before the first frame update
@@ -42,7 +44,7 @@ public class EnemyFinalBoss : Enemy
     {
         base.Start();
         stat2Fields = new GameObject[20];
-        StartBoss();
+        
     }
     public void StartBoss()
     {
@@ -54,6 +56,9 @@ public class EnemyFinalBoss : Enemy
         allowMovement = true;
         stat2Serious = 0;
         StartCoroutine(Fight());
+        Camera.main.GetComponent<CameraController>().enabled = false;
+        Camera.main.transform.position = cameraPosition;
+        wall.SetActive(true);
     }
     // Update is called once per frame
     protected override void Update()

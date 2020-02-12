@@ -20,8 +20,16 @@ public class EnemyProjectileTracer : EnemyProjectile
 
     public override void StartWork()
     {
-        target = GameMan.Instance.Agents[Random.Range(0, GameMan.Instance.Agents.Count)];
         base.StartWork();
+        if (GameMan.Instance.Agents.Count <= 0)
+        {
+            FinishWork();
+        }
+        else
+        {
+            target = GameMan.Instance.Agents[Random.Range(0, GameMan.Instance.Agents.Count)];
+        }
+
 
     }
 }
