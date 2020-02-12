@@ -14,9 +14,12 @@ public class Enemy : MonoBehaviour
 
     public float hp_max = 5f;
     [SerializeField]
-    protected float hp;
-    public int value = 0;
-
+    protected float hp;
+
+    public int value = 0;
+
+
+
     protected Material mat;
     protected Color startColor;
     // Start is called before the first frame update
@@ -98,10 +101,14 @@ public class Enemy : MonoBehaviour
         GetComponent<MeshRenderer>().enabled = true;
     }
 
-    protected virtual IEnumerator Outro() {
-        if(active)
-            GameMan.Instance.AddMoney(value);
-        active = false;
+    protected virtual IEnumerator Outro() {
+
+        if(active)
+
+            GameMan.Instance.AddMoney(value);
+
+        active = false;
+
         GetComponent<MeshRenderer>().enabled = false;
         outroPtc.Play();
 

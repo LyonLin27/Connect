@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameMan : MonoBehaviour
 {
@@ -37,7 +38,7 @@ public class GameMan : MonoBehaviour
     public GameObject[] enemyProjArr_Normal;
     public GameObject enemyProjPrefab_Normal;
     private int enemyProjIndex_Normal = 0;
-    private int epaLen_Normal = 300;
+    private int epaLen_Normal = 400;
 
     [HideInInspector]
     public GameObject[] projPtcWtArr;
@@ -161,6 +162,13 @@ public class GameMan : MonoBehaviour
         moneyUI.text = money.ToString();
     }
 
+    private void Update() {
+        if(Input.GetKeyDown(KeyCode.Equals)){
+            money += 100;
+            moneyUI.text = money.ToString();
+        }
+    }
+
     public void SwitchPlayer() {
         if (Agents.Count == 0) {
             GameOverUI.SetActive(true);
@@ -205,6 +213,10 @@ public class GameMan : MonoBehaviour
         foreach (GameObject proj in enemyProjArr_Normal) {
             proj.SetActive(false);
         }
+    }
+
+    public void OnRestart() {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     public GameObject GetPlayerProj() {
