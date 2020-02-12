@@ -25,6 +25,9 @@ public class EnemyFinalBoss : Enemy
     bool stat1Weapon2 = true;
     public float stat1Weapon3CD = 0.3f;
     bool stat1Weapon3 = true;
+    public List<GameObject> stat2Anchors;
+    GameObject[] stat2Fields;
+    int stat2Serious = 0;
 
 
     // Start is called before the first frame update
@@ -38,6 +41,7 @@ public class EnemyFinalBoss : Enemy
         hp = hp_max;
         StartCoroutine(Fight());
         bossSpeed = initialBossSpeed;
+        stat2Fields = new GameObject[20];
     }
 
     // Update is called once per frame
@@ -259,5 +263,59 @@ public class EnemyFinalBoss : Enemy
         yield return null;
 
         
+    }
+
+    public void Stat2Begin()
+    {
+        for (int i = 0; i< stat2Anchors.Count; i++)
+        {
+            GameObject ffb = gameMan.GetForceFieldBlue();
+            ffb.transform.position = stat2Anchors[i].transform.position;
+            ffb.SetActive(true);
+            ffb.GetComponent<ForceField>().ActiveForceField();
+            stat2Fields[i] = ffb;
+        }
+    }
+    public void Stat2IncreaseSerious()
+    {
+
+        if (stat2Serious == 0)
+        {
+            stat2Serious += 1;
+            Stat2ChangeColor(new int[] { 0,4,15,19 });
+        }
+        else if (stat2Serious == 1)
+        {
+            stat2Serious += 1;
+            Stat2ChangeColor(new int[] { 1, 3, 5, 9, 16, 18 });
+        }
+
+        else if (stat2Serious == 2)
+        {
+            stat2Serious += 1;
+            Stat2ChangeColor(new int[] {2,10,14,17 });
+        }
+        else if (stat2Serious == 3)
+        {
+            stat2Serious += 1;
+            Stat2ChangeColor(new int[] { 6, 8,11,13 });
+        }
+        else if (stat2Serious == 4)
+        {
+            stat2Serious += 1;
+            Stat2ChangeColor(new int[] { 7,12 });
+        }
+    }
+    void Stat2ChangeColor(int[] change)
+    {
+        for (int i = 0; i < change.Length; i++)
+        {
+            stat2Fields[i].GetComponent<ForceField>().DeactiveForceField();
+            GameObject ffr = gameMan.GetForceFieldRed();
+            ffr.transform.position = stat2Anchors[i].transform.position;
+            ffr.SetActive(true);
+            ffr.GetComponent<ForceField>().ActiveForceField();
+        }
+
     }
 }
