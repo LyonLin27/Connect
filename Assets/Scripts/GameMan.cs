@@ -208,11 +208,16 @@ public class GameMan : MonoBehaviour
         switch (projectileType)
         {
             case 0: //Normal Projectile
-                enemyProjIndex_Normal++;
-                if (enemyProjIndex_Normal >= epaLen_Normal) {
-                    enemyProjIndex_Normal = 0;
-                }
-                enemyProjArr_Normal[enemyProjIndex_Normal].GetComponent<EnemyProjectile>().lifeTime = lifeTime;
+                enemyProjIndex_Normal++;
+
+                if (enemyProjIndex_Normal >= epaLen_Normal) {
+
+                    enemyProjIndex_Normal = 0;
+
+                }
+
+                enemyProjArr_Normal[enemyProjIndex_Normal].GetComponent<EnemyProjectile>().lifeTime = lifeTime;
+
                 return enemyProjArr_Normal[enemyProjIndex_Normal];
             default:
                 return null;

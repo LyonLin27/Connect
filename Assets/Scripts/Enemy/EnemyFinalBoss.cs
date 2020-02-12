@@ -18,6 +18,7 @@ public class EnemyFinalBoss : Enemy
     public float initialBossSpeed;
     float bossSpeed;
 
+    bool phase1 = true;
     public float stat1SummonFieldCD = 10f;
     public float stat1Weapon1CD = 0.2f;
     bool stat1Weapon1 = true;
@@ -28,6 +29,8 @@ public class EnemyFinalBoss : Enemy
     public List<GameObject> stat2Anchors;
     GameObject[] stat2Fields;
     int stat2Serious = 0;
+    public int stat2HP= 45;
+
 
 
     // Start is called before the first frame update
@@ -48,6 +51,10 @@ public class EnemyFinalBoss : Enemy
     protected override void Update()
     {
         //base.Update();
+        if (phase1 == true && hp < stat2HP-5)
+        {
+            hp = stat2HP-5;
+        }
         rb.velocity = new Vector3(bossSpeed, 0f, 0f);
         if (movement)
         {
@@ -96,7 +103,7 @@ public class EnemyFinalBoss : Enemy
     {
         
         
-        while (true)
+        while (phase1)
         {
             yield return new WaitForSeconds(4f);
             StartCoroutine(Weapon1());
@@ -121,11 +128,36 @@ public class EnemyFinalBoss : Enemy
             stat1Weapon1 = true;
             stat1Weapon2 = true;
             allowMovement = true;
+            if (hp <= stat2HP)
+            {
+                phase1 = false;
+            }
 
         }
-        
+        StartCoroutine(Phase2());
     }
-    
+    public IEnumerator Phase2()
+    {
+       
+        StartCoroutine(Weapon3());
+        StartCoroutine(WeaponSummonEnemy());
+        yield return new WaitForSeconds(5f);
+        Stat2Begin();
+        while (true)
+        {
+            Stat2IncreaseSerious();
+            yield return new WaitForSeconds(4f);
+            StartCoroutine(WeaponSummonEnemy());
+            yield return new WaitForSeconds(5f);
+            StartCoroutine(WeaponSummonEnemy());
+
+            yield return new WaitForSeconds(6f);
+            StartCoroutine(WeaponSummonEnemy());
+
+
+        }
+        yield return null;
+    }
 
     public IEnumerator SummonForceField()
     {
@@ -146,20 +178,20 @@ public class EnemyFinalBoss : Enemy
         {
             for (int i = 0; i < 3; i++)
             {
-                GameObject proj = gameMan.GetEnemyProj(0);
+                GameObject proj = gameMan.GetEnemyProj(0,5f);
                 proj.transform.position = transform.position;
                 proj.transform.rotation = transform.rotation;
                 proj.GetComponent<EnemyProjectile>().StartWork();
                 switch (i)
                 {
                     case 0:
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-1f, 0f, -1f).normalized * 7f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-1f, 0f, -1f).normalized * 6f;
                         break;
                     case 1:
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, -1f).normalized * 7f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, -1f).normalized * 6f;
                         break;
                     case 2:
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(1f, 0f, -1f).normalized * 7f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(1f, 0f, -1f).normalized * 6f;
                         break;
                    
                 }
@@ -176,26 +208,26 @@ public class EnemyFinalBoss : Enemy
         {
             for (int i = 0; i < 4; i++)
             {
-                GameObject proj = gameMan.GetEnemyProj(0); 
+                GameObject proj = gameMan.GetEnemyProj(0,5f); 
                 proj.transform.rotation = transform.rotation;
                 proj.GetComponent<EnemyProjectile>().StartWork();
                 switch (i)
                 {
                     case 0:
                         proj.transform.position = transform.position + new Vector3(-3f,0f,0f);
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-0.5f, 0f, -1f).normalized * 5f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-0.5f, 0f, -1f).normalized * 4f;
                         break;
                     case 1:
                         proj.transform.position = transform.position + new Vector3(-3f, 0f, 0f);
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0.5f, 0f, -1f).normalized * 5f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0.5f, 0f, -1f).normalized * 4f;
                         break;
                     case 2:
                         proj.transform.position = transform.position + new Vector3(3f, 0f, 0f);
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-0.5f, 0f, -1f).normalized * 5f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(-0.5f, 0f, -1f).normalized * 4f;
                         break;
                     case 3:
                         proj.transform.position = transform.position + new Vector3(3f, 0f, 0f);
-                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0.5f, 0f, -1f).normalized * 5f;
+                        proj.GetComponent<Rigidbody>().velocity = new Vector3(0.5f, 0f, -1f).normalized * 4f;
                         break;
                     
                 }
@@ -206,32 +238,7 @@ public class EnemyFinalBoss : Enemy
         }
     }
 
-    public IEnumerator Weapon3()
-    {
-        while (stat1Weapon1)
-        {
-            for (int i = 0; i < 2; i++)
-            {
-                GameObject proj = gameMan.GetProjectileTracer();
-                proj.transform.position = transform.position;
-                proj.transform.rotation = transform.rotation;
-                proj.GetComponent<EnemyProjectile>().StartWork();
-                switch (i)
-                {
-                    case 0:
-                        proj.transform.position = transform.position + new Vector3(-2.5f, 0f, 0f);
-                        break;
-                    case 1:
-                        proj.transform.position = transform.position + new Vector3(2.5f, 0f, 0f);
-                        break;
-                    
-                }
-
-            }
-            yield return new WaitForSeconds(stat1Weapon3CD);
-
-        }
-    }
+   
 
     public IEnumerator WeaponSummonEnemy()
     {
@@ -266,7 +273,32 @@ public class EnemyFinalBoss : Enemy
 
         
     }
+    public IEnumerator Weapon3()
+    {
+        while (true)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                GameObject proj = gameMan.GetProjectileTracer();
+                proj.transform.position = transform.position;
+                proj.transform.rotation = transform.rotation;
+                proj.GetComponent<EnemyProjectile>().StartWork();
+                switch (i)
+                {
+                    case 0:
+                        proj.transform.position = transform.position + new Vector3(-2.5f, 0f, 0f);
+                        break;
+                    case 1:
+                        proj.transform.position = transform.position + new Vector3(2.5f, 0f, 0f);
+                        break;
 
+                }
+
+            }
+            yield return new WaitForSeconds(stat1Weapon3CD);
+
+        }
+    }
     public void Stat2Begin()
     {
         for (int i = 0; i< stat2Anchors.Count; i++)
@@ -284,7 +316,7 @@ public class EnemyFinalBoss : Enemy
         if (stat2Serious == 0)
         {
             stat2Serious += 1;
-            Stat2ChangeColor(new int[] { 0,4,15,19 });
+            Stat2ChangeColor(new int[] { 0,4,7,15,19 });
         }
         else if (stat2Serious == 1)
         {
@@ -295,26 +327,22 @@ public class EnemyFinalBoss : Enemy
         else if (stat2Serious == 2)
         {
             stat2Serious += 1;
-            Stat2ChangeColor(new int[] {2,10,14,17 });
+            Stat2ChangeColor(new int[] {2,10,12,14,17 });
         }
         else if (stat2Serious == 3)
         {
             stat2Serious += 1;
             Stat2ChangeColor(new int[] { 6, 8,11,13 });
         }
-        else if (stat2Serious == 4)
-        {
-            stat2Serious += 1;
-            Stat2ChangeColor(new int[] { 7,12 });
-        }
+       
     }
     void Stat2ChangeColor(int[] change)
     {
         for (int i = 0; i < change.Length; i++)
         {
-            stat2Fields[i].GetComponent<ForceField>().DeactiveForceField();
+            stat2Fields[change[i]].GetComponent<ForceField>().DeactiveForceField();
             GameObject ffr = gameMan.GetForceFieldRed();
-            ffr.transform.position = stat2Anchors[i].transform.position;
+            ffr.transform.position = stat2Anchors[change[i]].transform.position;
             ffr.SetActive(true);
             ffr.GetComponent<ForceField>().ActiveForceField();
         }
