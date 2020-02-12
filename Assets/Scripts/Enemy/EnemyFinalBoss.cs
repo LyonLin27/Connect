@@ -61,6 +61,7 @@ public class EnemyFinalBoss : Enemy
         stat1BlueField2 = null;
         stat1RedField1 = null;
         stat1RedField2 = null;
+        backMesh.material = blackMaterial;
 
     }
     // Update is called once per frame
