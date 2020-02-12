@@ -42,12 +42,13 @@ public class EnemyFinalBoss : Enemy
     protected override void Start()
     {
         base.Start();
-        stat2Fields = new GameObject[20];
         
+        stat2Fields = new GameObject[20];
+        bossStartPoint = transform.position;
     }
     public void StartBoss()
     {
-        bossStartPoint = transform.position;
+       
         bossSpeed = initialBossSpeed;
         phase1 = true;
         hp = hp_max;
@@ -62,6 +63,7 @@ public class EnemyFinalBoss : Enemy
         stat1RedField1 = null;
         stat1RedField2 = null;
         backMesh.material = blackMaterial;
+        stat2Fields = new GameObject[20];
 
     }
     // Update is called once per frame

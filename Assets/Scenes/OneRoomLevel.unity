@@ -9218,7 +9218,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 5, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &855034493
 MonoBehaviour:
@@ -9235,6 +9235,7 @@ MonoBehaviour:
   bossObj: {fileID: 2070881488}
   bossWall: {fileID: 884900617345924509}
   bossWallPosition: {x: 0, y: 0, z: 0}
+  wallMoving: 0
 --- !u!33 &855034494
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -11425,22 +11426,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1898986430}
   m_PrefabAsset: {fileID: 0}
---- !u!54 &1558357413
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 884900617345924509}
-  serializedVersion: 2
-  m_Mass: 1000
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 118
-  m_CollisionDetection: 0
 --- !u!1 &1559080793
 GameObject:
   m_ObjectHideFlags: 0
@@ -14766,7 +14751,6 @@ GameObject:
   - component: {fileID: 884900617345924480}
   - component: {fileID: 884900617345924511}
   - component: {fileID: 884900617345924510}
-  - component: {fileID: 1558357413}
   m_Layer: 9
   m_Name: Cube (3)
   m_TagString: Untagged
@@ -15033,12 +15017,12 @@ PrefabInstance:
     - target: {fileID: 2863061821778733708, guid: f96af201d4bcd754eabf015f2992746d,
         type: 3}
       propertyPath: stat1Weapon1CD
-      value: 0.7
+      value: 1.1
       objectReference: {fileID: 0}
     - target: {fileID: 2863061821778733708, guid: f96af201d4bcd754eabf015f2992746d,
         type: 3}
       propertyPath: stat1Weapon2CD
-      value: 1.2
+      value: 1.8
       objectReference: {fileID: 0}
     - target: {fileID: 2863061821778733710, guid: f96af201d4bcd754eabf015f2992746d,
         type: 3}
