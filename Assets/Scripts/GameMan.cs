@@ -83,6 +83,9 @@ public class GameMan : MonoBehaviour
     private int enemy2Index = 0;
     private int enemy2Len = 30;
 
+    public GameObject bossObj;
+    public GameObject bossWall;
+
 
     private void Awake() {
         if (Instance == null)
@@ -162,11 +165,16 @@ public class GameMan : MonoBehaviour
         moneyUI.text = money.ToString();
     }
 
-    private void Update() {
-        if(Input.GetKeyDown(KeyCode.Equals)){
-            money += 100;
-            moneyUI.text = money.ToString();
-        }
+    private void Update() {
+
+        if(Input.GetKeyDown(KeyCode.Equals)){
+
+            money += 100;
+
+            moneyUI.text = money.ToString();
+
+        }
+
     }
 
     public void SwitchPlayer() {
@@ -197,6 +205,9 @@ public class GameMan : MonoBehaviour
     }
 
     public void OnRetry() {
+        bossObj.GetComponentInChildren<EnemyFinalBoss>().StopAllCoroutines();
+        bossObj.SetActive(false);
+        bossWall.SetActive(false);
         Vector3 bonfirePos = LastBonfire.transform.position;
         float playerY = PlayerAgent.transform.position.y;
         PlayerAgent.GetComponent<AgentController>().isPlayer = false;
@@ -205,6 +216,7 @@ public class GameMan : MonoBehaviour
         PlayerAgent.GetComponent<AgentController>().ReviveAsPlayer();
         GameOverUI.SetActive(false);
         waveMan.OnRetry();
+
 
         foreach (EnemyRoom er in EnemyRooms) {
             er.ResetEnemy();
