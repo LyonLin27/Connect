@@ -138,7 +138,7 @@ public class GameMan : MonoBehaviour
         return playerProjArr[playerProjIndex];
     }
 
-    public GameObject GetEnemyProj(int projectileType)
+    public GameObject GetEnemyProj(int projectileType, float lifeTime = 8f)
     {
         switch (projectileType)
         {
@@ -147,6 +147,7 @@ public class GameMan : MonoBehaviour
                 if (enemyProjIndex_Normal >= epaLen_Normal) {
                     enemyProjIndex_Normal = 0;
                 }
+                enemyProjArr_Normal[enemyProjIndex_Normal].GetComponent<EnemyProjectile>().lifeTime = lifeTime;
                 return enemyProjArr_Normal[enemyProjIndex_Normal];
             default:
                 return null;
