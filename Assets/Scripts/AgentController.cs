@@ -51,99 +51,186 @@ public class AgentController : MonoBehaviour
     private Vector3 linear;         // The resilts of the kinematic steering requested
     private float angular;          // The resilts of the kinematic steering requested
 
-    private void Awake() {
-        gm = FindObjectOfType<GameMan>();
-        ai = GetComponent<SteeringBehavior>();
-        model = gameObject.transform.Find("Cube").gameObject;
-        rb = GetComponent<Rigidbody>();
-        pi = new PlayerInput();
-        mat = model.GetComponent<MeshRenderer>().material;
-        wakeParticle = transform.Find("WakeParticle").GetComponent<ParticleSystem>();
-        deathParticle = transform.Find("DeathParticle").GetComponent<ParticleSystem>();
-        indicator = transform.Find("Indicator").gameObject;
-
-        ai.target = gm.PlayerAgent;
-        position = rb.position;
-        orientation = transform.eulerAngles.y;
-
-        pi.PlayerControls.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
-        pi.PlayerControls.Move.canceled += ctx => moveInput = Vector2.zero;
-        pi.PlayerControls.Aim.performed += ctx => aimInput = ctx.ReadValue<Vector2>();
-        pi.PlayerControls.Shoot.performed += ctx => HandleShoot();
-        //pi.PlayerControls.Aim.canceled += ctx => aimInput = Vector2.zero;
-
-        if (isPlayer) {
-            connected = true;
-        }
+    private void Awake() {
+
+        gm = FindObjectOfType<GameMan>();
+
+        ai = GetComponent<SteeringBehavior>();
+
+        model = gameObject.transform.Find("Cube").gameObject;
+
+        rb = GetComponent<Rigidbody>();
+
+        pi = new PlayerInput();
+
+        mat = model.GetComponent<MeshRenderer>().material;
+
+        wakeParticle = transform.Find("WakeParticle").GetComponent<ParticleSystem>();
+
+        deathParticle = transform.Find("DeathParticle").GetComponent<ParticleSystem>();
+
+        indicator = transform.Find("Indicator").gameObject;
+
+
+
+        ai.target = gm.PlayerAgent;
+
+        position = rb.position;
+
+        orientation = transform.eulerAngles.y;
+
+
+
+        pi.PlayerControls.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+
+        pi.PlayerControls.Move.canceled += ctx => moveInput = Vector2.zero;
+
+        pi.PlayerControls.Aim.performed += ctx => aimInput = ctx.ReadValue<Vector2>();
+
+        pi.PlayerControls.Shoot.performed += ctx => HandleShoot();
+
+        //pi.PlayerControls.Aim.canceled += ctx => aimInput = Vector2.zero;
+
+
+
+        if (isPlayer) {
+
+            connected = true;
+
+        }
+
     }
 
-    private void Start() {
-        gm.LevelUpUI.GetComponent<LevelUpUI>().Agents.Add(this);
-        gm.LevelUpUI.GetComponent<LevelUpUI>().Sync(this);
+    private void Start() {
+
+        gm.LevelUpUI.GetComponent<LevelUpUI>().Agents.Add(this);
+
+        gm.LevelUpUI.GetComponent<LevelUpUI>().Sync(this);
+
     }
 
-    private void Update() {
-        if (isPlayer && connected) {
-            indicator.SetActive(true);
-        }
-        else {
-            indicator.SetActive(false);
-        }
+    private void Update() {
+
+        if (isPlayer && connected) {
+
+            indicator.SetActive(true);
+
+        }
+
+        else {
+
+            indicator.SetActive(false);
+
+        }
+
     }
 
-    private void FixedUpdate() {
-        if (isPlayer) {
-            if (playerReviving) {
-                mat.SetColor("_BaseColor", Color.Lerp(mat.GetColor("_BaseColor"), playerBlue, 0.1f));
-                model.transform.Rotate(0f, 10f, 0f);
-                gameObject.transform.Translate(0f, Time.fixedDeltaTime, 0f);
-
-                if (gameObject.transform.position.y > 1.23f) {
-                    mat.SetColor("_BaseColor", playerBlue);
-                    gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - 1.23f, 0f);
-                    wakeParticle.Play();
-                    UpdateFollowTarget();
-                    print(gameObject.name + " connected");
-                    connected = true;
-                    playerReviving = false;
-                }
-            }
-            else {
-                HandleMove_Player();
-                model.GetComponent<MeshRenderer>().material.color = Color.Lerp(model.GetComponent<MeshRenderer>().material.color, Color.red, 0.1f);
-            }
-
-        }
-        else {
-            if (connected) {
-                HandleMove_AI();
-            }
-            else {
-                if (Vector3.Distance(transform.position, gm.PlayerAgent.transform.position) < connectDist 
-                    && gm.PlayerAgent.GetComponent<AgentController>().connected) {
-
-                    // wake up
-                    mat.SetColor("_BaseColor", Color.Lerp(mat.GetColor("_BaseColor"), playerBlue, 0.1f));
-                    model.transform.Rotate(0f, 10f, 0f);
-                    gameObject.transform.Translate(0f, Time.fixedDeltaTime, 0f);
-
-                    if (gameObject.transform.position.y > gm.PlayerAgent.transform.position.y) {
-                        mat.SetColor("_BaseColor", playerBlue);
-                        gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - gm.PlayerAgent.transform.position.y, 0f);
-                        wakeParticle.Play();
-                        gm.Agents.Add(gameObject);
-                        UpdateFollowTarget();
-                        print(gameObject.name + " connected");
-                        connected = true;
-                    }
-                }
-                else {
-                    mat.SetColor("_BaseColor", Color.grey);
-                    gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - 0.25f, 0f);
-                }
-            }
-        }
-        
+    private void FixedUpdate() {
+
+        if (isPlayer) {
+
+            if (playerReviving) {
+
+                mat.SetColor("_BaseColor", Color.Lerp(mat.GetColor("_BaseColor"), playerBlue, 0.1f));
+
+                model.transform.Rotate(0f, 10f, 0f);
+
+                gameObject.transform.Translate(0f, Time.fixedDeltaTime, 0f);
+
+
+
+                if (gameObject.transform.position.y > 1.23f) {
+
+                    mat.SetColor("_BaseColor", playerBlue);
+
+                    gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - 1.23f, 0f);
+
+                    wakeParticle.Play();
+
+                    UpdateFollowTarget();
+
+                    print(gameObject.name + " connected");
+
+                    connected = true;
+
+                    playerReviving = false;
+
+                }
+
+            }
+
+            else {
+
+                HandleMove_Player();
+
+                model.GetComponent<MeshRenderer>().material.color = Color.Lerp(model.GetComponent<MeshRenderer>().material.color, Color.red, 0.1f);
+
+            }
+
+
+
+        }
+
+        else {
+
+            if (connected) {
+
+                HandleMove_AI();
+
+            }
+
+            else {
+
+                if (Vector3.Distance(transform.position, gm.PlayerAgent.transform.position) < connectDist 
+
+                    && gm.PlayerAgent.GetComponent<AgentController>().connected) {
+
+
+
+                    // wake up
+
+                    mat.SetColor("_BaseColor", Color.Lerp(mat.GetColor("_BaseColor"), playerBlue, 0.1f));
+
+                    model.transform.Rotate(0f, 10f, 0f);
+
+                    gameObject.transform.Translate(0f, Time.fixedDeltaTime, 0f);
+
+
+
+                    if (gameObject.transform.position.y > gm.PlayerAgent.transform.position.y) {
+
+                        mat.SetColor("_BaseColor", playerBlue);
+
+                        gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - gm.PlayerAgent.transform.position.y, 0f);
+
+                        wakeParticle.Play();
+
+                        gm.Agents.Add(gameObject);
+
+                        UpdateFollowTarget();
+
+                        print(gameObject.name + " connected");
+
+                        connected = true;
+
+                    }
+
+                }
+
+                else {
+
+                    mat.SetColor("_BaseColor", Color.grey);
+
+                    gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - 0.25f, 0f);
+
+                }
+
+            }
+
+        }
+
+        
+
     }
 
     public void ReviveAsPlayer() {
@@ -176,7 +263,8 @@ public class AgentController : MonoBehaviour
             return;
         }
 
-        if (isPlayer) {
+        if (isPlayer) {
+
             lastShootTime = Time.time;
             GameObject proj = gm.GetPlayerProj();
             proj.transform.position = model.transform.position;
@@ -191,26 +279,28 @@ public class AgentController : MonoBehaviour
             float randomFloat = Random.value/2f;
             StartCoroutine("ShootAfterTime", randomFloat);
         }
-    }
-    IEnumerator ShootAfterTime(float time) {
-        yield return new WaitForSeconds(time);
-        GameObject proj = gm.GetPlayerProj();
-        proj.transform.position = model.transform.position;
-        proj.transform.rotation = model.transform.rotation;
-        proj.GetComponent<PlayerProj>().speed = projSpd;
-        proj.GetComponent<PlayerProj>().dmg = power / 10f;
-        proj.transform.Rotate(0f, Random.value * shootAcc - shootAcc / 2f, 0f);
-        proj.SetActive(true);
     }
+
     IEnumerator ShootAfterTime(float time) {
+
         yield return new WaitForSeconds(time);
+
         GameObject proj = gm.GetPlayerProj();
+
         proj.transform.position = model.transform.position;
+
         proj.transform.rotation = model.transform.rotation;
+
         proj.GetComponent<PlayerProj>().speed = projSpd;
+
+        proj.GetComponent<PlayerProj>().dmg = power / 10f;
+
         proj.transform.Rotate(0f, Random.value * shootAcc - shootAcc / 2f, 0f);
+
         proj.SetActive(true);
+
     }
+    
 
     private void HandleMove_AI() {
         Vector4 linear_angular;
