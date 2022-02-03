@@ -150,12 +150,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: feca8aded63ad2f4db77b4559b015b58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 0}
+  agent: {fileID: 3167640429787752159}
+  agentTrans: {fileID: 3510242889103484760}
   target: {fileID: 0}
   maxPrediction: 10
   maxAcceleration: 50
   maxSpeed: 12
-  targetRadiusL: 2
+  targetRadiusL: 2.5
   slowRadiusL: 5
   timeToTarget: 0.1
   maxRotation: 4

@@ -12,6 +12,8 @@ public class AgentController : MonoBehaviour
     Vector2 moveInput;
     Vector2 aimInput;
 
+    private DynamicJoystick movStk;
+    private DynamicJoystick shtStk;
     private GameObject model;
     private Rigidbody rb;
 
@@ -51,6 +53,11 @@ public class AgentController : MonoBehaviour
     private Vector3 linear;         // The resilts of the kinematic steering requested
     private float angular;          // The resilts of the kinematic steering requested
 
+    // wall stuck 
+    private float stuckCountdown = 3f;
+    private float stuckCountdownTimer;
+    private bool isStuck;
+
     private void Awake() {
         gm = FindObjectOfType<GameMan>();
         ai = GetComponent<SteeringBehavior>();
@@ -61,16 +68,12 @@ public class AgentController : MonoBehaviour
         wakeParticle = transform.Find("WakeParticle").GetComponent<ParticleSystem>();
         deathParticle = transform.Find("DeathParticle").GetComponent<ParticleSystem>();
         indicator = transform.Find("Indicator").gameObject;
+        movStk = gm.movStk;
+        shtStk = gm.shtStk;
 
         ai.target = gm.PlayerAgent;
         position = rb.position;
         orientation = transform.eulerAngles.y;
-
-        pi.PlayerControls.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
-        pi.PlayerControls.Move.canceled += ctx => moveInput = Vector2.zero;
-        pi.PlayerControls.Aim.performed += ctx => aimInput = ctx.ReadValue<Vector2>();
-        pi.PlayerControls.Shoot.performed += ctx => HandleShoot();
-        //pi.PlayerControls.Aim.canceled += ctx => aimInput = Vector2.zero;
 
         if (isPlayer) {
             connected = true;
@@ -78,11 +81,31 @@ public class AgentController : MonoBehaviour
     }
 
     private void Start() {
+        if (GameMan.Instance.controlScheme == GameMan.ControlScheme.mouse)
+        {
+            pi.PlayerControls.Move.performed += ctx => moveInput = ctx.ReadValue<Vector2>();
+            pi.PlayerControls.Move.canceled += ctx => moveInput = Vector2.zero;
+            pi.PlayerControls.Aim.performed += ctx => aimInput = ctx.ReadValue<Vector2>();
+            pi.PlayerControls.Shoot.performed += ctx => HandleShoot();
+            pi.PlayerControls.Aim.canceled += ctx => aimInput = Vector2.zero;
+
+            movStk.gameObject.SetActive(false);
+            shtStk.gameObject.SetActive(false);
+        }
+
         gm.LevelUpUI.GetComponent<LevelUpUI>().Agents.Add(this);
         gm.LevelUpUI.GetComponent<LevelUpUI>().Sync(this);
     }
 
     private void Update() {
+        // touch control
+        if (GameMan.Instance.controlScheme == GameMan.ControlScheme.touch) {
+            moveInput = movStk.Direction;
+            aimInput = shtStk.Direction;
+            if (aimInput.magnitude > 0.5f)
+                HandleShoot();
+        }
+        
         if (isPlayer && connected) {
             indicator.SetActive(true);
         }
@@ -109,14 +132,22 @@ public class AgentController : MonoBehaviour
                 }
             }
             else {
-                HandleMove_Player();
-                model.GetComponent<MeshRenderer>().material.color = Color.Lerp(model.GetComponent<MeshRenderer>().material.color, Color.red, 0.1f);
+                switch (GameMan.Instance.controlScheme) {
+                    case GameMan.ControlScheme.touch:
+                        HandleMove_Player_Touch();
+                        break;
+                    case GameMan.ControlScheme.mouse:
+                        HandleMove_Player_Mouse();
+                        break;
+                }
+                //model.GetComponent<MeshRenderer>().material.color = Color.Lerp(model.GetComponent<MeshRenderer>().material.color, Color.red, 0.1f);
             }
 
         }
         else {
             if (connected) {
                 HandleMove_AI();
+                CheckStuck();
             }
             else {
                 if (Vector3.Distance(transform.position, gm.PlayerAgent.transform.position) < connectDist 
@@ -152,7 +183,7 @@ public class AgentController : MonoBehaviour
         gm.SwitchPlayer();
     }
 
-    private void HandleMove_Player() {
+    private void HandleMove_Player_Mouse() {
         if (!connected) return;
         //move
         Vector2 moveVec = Square2Circle(moveInput);
@@ -161,6 +192,18 @@ public class AgentController : MonoBehaviour
         //aim
         Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(model.transform.position);
         model.transform.forward = ToVec3((aimInput - playerScreenPos).normalized);
+    }
+
+    private void HandleMove_Player_Touch()
+    {
+        if (!connected) return;
+        //move
+        Vector2 moveVec = Square2Circle(moveInput);
+        rb.velocity = Vector3.Lerp(rb.velocity, ToVec3(moveVec) * speed, 0.2f);
+
+        //aim
+        if (aimInput.magnitude > 0f)
+            model.transform.forward = new Vector3(aimInput.x, 0f, aimInput.y);
     }
 
     private void HandleShoot() {
@@ -187,14 +230,21 @@ public class AgentController : MonoBehaviour
             proj.SetActive(true);
         }
         else {
-            lastShootTime = Time.time;
             float randomFloat = Random.value/2f;
-            StartCoroutine("ShootAfterTime", randomFloat);
+            GameObject proj = gm.GetPlayerProj();
+            lastShootTime = Time.time + randomFloat * shootCD;
+            proj.transform.position = model.transform.position;
+            proj.transform.rotation = model.transform.rotation;
+            proj.GetComponent<PlayerProj>().speed = projSpd;
+            proj.GetComponent<PlayerProj>().dmg = power / 10f;
+            proj.transform.Rotate(0f, Random.value * shootAcc - shootAcc / 2f, 0f);
+            proj.SetActive(true);
         }
     }
     IEnumerator ShootAfterTime(float time) {
         yield return new WaitForSeconds(time);
         GameObject proj = gm.GetPlayerProj();
+        lastShootTime = Time.time;
         proj.transform.position = model.transform.position;
         proj.transform.rotation = model.transform.rotation;
         proj.GetComponent<PlayerProj>().speed = projSpd;
@@ -210,6 +260,31 @@ public class AgentController : MonoBehaviour
         angular = linear_angular.w;
 
         UpdateMovement(linear, angular, Time.deltaTime);
+    }
+
+    private void CheckStuck()
+    {
+        RaycastHit hit;
+        Ray ray = new Ray(transform.position, GameMan.Instance.PlayerAgent.transform.position - transform.position);
+        isStuck = Physics.Raycast(ray, out hit, 1f, LayerMask.GetMask("Wall"), QueryTriggerInteraction.Ignore);
+        isStuck &= Vector3.Distance(transform.position, GameMan.Instance.PlayerAgent.transform.position - transform.position) > 5f;
+
+        if (isStuck)
+            Debug.DrawLine(transform.position, hit.point, playerBlue, 0.1f);
+
+        if (isStuck)
+        {
+            stuckCountdownTimer -= Time.fixedDeltaTime;
+        }
+        else
+        {
+            stuckCountdownTimer = stuckCountdown;
+        }
+
+        if (isStuck && stuckCountdownTimer < 0f)
+        {
+            Disconnect();
+        }
     }
 
     /// <summary>
@@ -233,26 +308,43 @@ public class AgentController : MonoBehaviour
             velocity = rb.velocity;
         }
         position = rb.position;
-        //rb.MoveRotation(Quaternion.Euler(new Vector3(0, Mathf.Rad2Deg * orientation, 0)));
-        //rb.angularVelocity = new Vector3(rb.angularVelocity.x, rotation * Mathf.Rad2Deg, rb.angularVelocity.z);
-
-        Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(model.transform.position);
-        model.transform.forward = ToVec3((aimInput - playerScreenPos).normalized);
+        if (GameMan.Instance.controlScheme == GameMan.ControlScheme.touch)
+        {
+            if (aimInput.magnitude > 0f)
+                model.transform.forward = new Vector3(aimInput.x, 0f, aimInput.y);
+        }
+        else {
+            Vector2 playerScreenPos = Camera.main.WorldToScreenPoint(model.transform.position);
+            model.transform.forward = ToVec3((aimInput - playerScreenPos).normalized);
+        }
     }
 
     private void OnCollisionEnter(Collision coll) {
         if (coll.gameObject.layer == LayerMask.NameToLayer("EnemyProj")) {
-            connected = false;
-            mat.SetColor("_BaseColor", Color.grey);
-            gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - 0.25f, 0f);
-            gm.Agents.Remove(gameObject);
-            deathParticle.Play();
-
+            Disconnect();
 
             if (isPlayer) {
                 StartCoroutine("SwitchPlayerAfterTime", 1f);
             }
         }
+    }
+
+    public void Disconnect()
+    {
+        connected = false;
+        mat.SetColor("_BaseColor", Color.grey);
+        gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - 0.25f, 0f);
+        gm.Agents.Remove(gameObject);
+        deathParticle.Play();
+    }
+
+    public void DisconnectNotRemove()
+    {
+        connected = false;
+        mat.SetColor("_BaseColor", Color.grey);
+        gameObject.transform.position -= new Vector3(0f, gameObject.transform.position.y - 0.25f, 0f);
+        //gm.Agents.Remove(gameObject);
+        deathParticle.Play();
     }
 
     public void UpdateFollowTarget() {

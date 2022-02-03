@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Bonfire : MonoBehaviour {
+    public int ID;
+
     private ParticleSystem startP;
     private ParticleSystem fireP;
     private ParticleSystem smokeP;
@@ -43,7 +45,9 @@ public class Bonfire : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other) {
         if (other.transform.parent.GetComponent<AgentController>() && other.transform.parent.GetComponent<AgentController>().isPlayer) {
-            GameMan.Instance.LevelUpUI.SetActive(true);
+            if(ID != 3)
+                GameMan.Instance.LevelUpUI.SetActive(true);
+            GameMan.Instance.EnterBonfire(this);
         }
     }
 

@@ -9,6 +9,16 @@ public class GameMan : MonoBehaviour
 {
     public static GameMan Instance { get; private set; }
 
+    public enum ControlScheme
+    {
+        mouse,
+        touch,
+        twinStick
+    }
+    public ControlScheme controlScheme = ControlScheme.mouse;
+
+    public DynamicJoystick movStk;
+    public DynamicJoystick shtStk;
     public GameObject AgentPrefab;
     public GameObject PlayerAgent;
     [HideInInspector]
@@ -20,6 +30,7 @@ public class GameMan : MonoBehaviour
     [HideInInspector]
     public List<EnemyRoom> EnemyRooms;
     public GameObject GameOverUI;
+    public GameObject GameFinishUI;
     public GameObject LevelUpUI;
     public TextMeshProUGUI moneyUI;
     public int money = 0;
@@ -30,7 +41,7 @@ public class GameMan : MonoBehaviour
     public GameObject playerProjParent;
     public GameObject playerProjPrefab;
     private int playerProjIndex = 0;
-    private int ppaLen = 200;
+    private int ppaLen = 400;
 
     public GameObject enemyProjParent;
     
@@ -38,7 +49,7 @@ public class GameMan : MonoBehaviour
     public GameObject[] enemyProjArr_Normal;
     public GameObject enemyProjPrefab_Normal;
     private int enemyProjIndex_Normal = 0;
-    private int epaLen_Normal = 400;
+    private int epaLen_Normal = 600;
 
     [HideInInspector]
     public GameObject[] projPtcWtArr;
@@ -52,6 +63,9 @@ public class GameMan : MonoBehaviour
     public GameObject projPtcRdPrefab;
     private int projPtcRdIndex = 0;
     private int ppraLen = 20;
+
+    // boss
+    public EnemyBoss boss;
 
     private void Awake() {
         if (Instance == null)
@@ -129,29 +143,77 @@ public class GameMan : MonoBehaviour
         foreach (EnemyRoom er in EnemyRooms) {
             er.ResetEnemy();
         }
+
+        waveMan.OnBonfireEnter(bonfire);
+
+        ResetAllProj();
+
+        if (bonfire.ID == 3)
+        {
+            GameFinishUI.SetActive(true);
+        }
+    }
+
+    public void EnterBonfire(Bonfire bonfire)
+    {
+        waveMan.OnBonfireEnter(bonfire);
+
+        if (bonfire.ID == 3)
+        {
+            GameFinishUI.SetActive(true);
+        }
+        else {
+            boss.Reset();//just in case
+        }
     }
 
     public void OnRetry() {
         Vector3 bonfirePos = LastBonfire.transform.position;
         float playerY = PlayerAgent.transform.position.y;
         PlayerAgent.GetComponent<AgentController>().isPlayer = false;
+
+        foreach (var agent in Agents)
+        {
+            agent.GetComponent<AgentController>().DisconnectNotRemove();
+        }
+        Agents.Clear();
+
         PlayerAgent = Instantiate(AgentPrefab);
         PlayerAgent.transform.position = new Vector3(bonfirePos.x, playerY, bonfirePos.z - 3f);
         PlayerAgent.GetComponent<AgentController>().ReviveAsPlayer();
         GameOverUI.SetActive(false);
-        waveMan.OnRetry();
+        waveMan.OnRetry(LastBonfire);
 
         foreach (EnemyRoom er in EnemyRooms) {
             er.ResetEnemy();
         }
 
-        foreach (GameObject proj in enemyProjArr_Normal) {
-            proj.SetActive(false);
+        ResetAllProj();
+        boss.Reset();
+    }
+
+    public void OnReturnToB1()
+    {
+        GameFinishUI.SetActive(false);
+        foreach (Bonfire bf in Bonfires)
+        {
+            if (bf.ID == 1)
+            {
+                LastBonfire = bf;
+                break;
+            }
         }
+
+        OnRetry();
     }
 
     public void OnRestart() {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void OnGateTriggered(int ID)
+    {
+        waveMan.OnGateTriggered(ID);
     }
 
     public GameObject GetPlayerProj() {
@@ -202,5 +264,20 @@ public class GameMan : MonoBehaviour
     public void SpendMoney(int value) {
         money -= value;
         moneyUI.text = money.ToString();
+    }
+
+    public void ResetAllProj(){
+        foreach (GameObject proj in enemyProjArr_Normal)
+        {
+            proj.SetActive(false);
+        }
+    }
+
+    public void ResetAllProjNicely()
+    {
+        foreach (GameObject proj in enemyProjArr_Normal)
+        {
+            proj.GetComponent<EnemyProjectile>().FinishWorkNicely();
+        }
     }
 }

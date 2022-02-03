@@ -16,14 +16,31 @@ public class WaveMan : MonoBehaviour
     public GameObject enemyPrefabAim;
     public Transform frontGate;
     public Transform frontGateClose;
-    private Vector3 gateStartPos;
-    private bool closeGate = false;
+    public Transform secondGate;
+    public Transform secondGateClose;
+    public BreakableGate bossGate;
+    private Vector3 frontGateStartPos;
+    private Vector3 secondGateStartPos;
+    private GateTrigger frontGateTrigger;
+    private GateTrigger secondGateTrigger;
+    private bool closeFrontGate = false;
+    private bool closeSecondGate = false;
 
-    private void Start() {
+    private bool paused = false;
+
+	private void Awake()
+	{
         currWave = startWave;
         enemyList = new List<Enemy>();
+        frontGateStartPos = frontGate.position;
+        frontGateTrigger = frontGate.GetComponentInChildren<GateTrigger>();
+        secondGateStartPos = secondGate.position;
+        secondGateTrigger = secondGate.GetComponentInChildren<GateTrigger>();
+        bossGate.OnBreak += OnBossGateBreak;
+	}
+
+	private void Start() {
         waveTxt.CrossFadeAlpha(0f, 1f, true);
-        gateStartPos = frontGate.position;
     }
 
     private void Update() {
@@ -34,7 +51,7 @@ public class WaveMan : MonoBehaviour
                 break;
             }
         }
-        if (currWave >= 10) {
+        if (currWave >= 10 || paused) {
             return;
         }
         if (waveEnd && enemyList.Count == 0) {
@@ -43,14 +60,28 @@ public class WaveMan : MonoBehaviour
             if (currWave >= 10) {
                 return;
             }
+
+            GameMan.Instance.ResetAllProjNicely();
+
             StartCoroutine("StartWaveAfterTime", currWave);
         }
-        if (closeGate) {
+
+        if (closeFrontGate) {
             frontGate.position = Vector3.Lerp(frontGate.position, frontGateClose.position, Time.deltaTime*2f);
         }
-        if (closeGate && Vector3.Distance(frontGate.position, frontGateClose.position) < 0.1f) {
+        if (closeFrontGate && Vector3.Distance(frontGate.position, frontGateClose.position) < 0.1f) {
             frontGate.position = frontGateClose.position;
-            closeGate = false;
+            closeFrontGate = false;
+        }
+
+        if (closeSecondGate)
+        {
+            secondGate.position = Vector3.Lerp(secondGate.position, secondGateClose.position, Time.deltaTime * 2f);
+        }
+        if (closeSecondGate && Vector3.Distance(secondGate.position, secondGateClose.position) < 0.1f)
+        {
+            secondGate.position = secondGateClose.position;
+            closeSecondGate = false;
         }
     }
 
@@ -155,22 +186,101 @@ public class WaveMan : MonoBehaviour
         enemyList.Add(enemy.GetComponent<Enemy>());
     }
 
-    public void OnRetry() {
+    public void OnRetry(Bonfire bonfire) {
+        OnBonfireEnter(bonfire);
+    }
+
+    // case1: player breaks boss gate
+    //      pause current waves, open gate 1, keep gate 1 trigger off
+    //      open gate 3..?
+    // case2: player touches bonfire 1
+    //      open gate 1, turn on trigger, reset waves, restore boss gate
+    // case3: player touches bonfire 2
+    //      restore boss gate, open gate 3...?
+    // Retry Bonfire 1: reset waves, open gate 1, restore boss gate
+    // Retry Bonfire 2: reset waves, close boss gate, open gate 3
+
+    public void OnGateTriggered(int id)
+    {
+        paused = false;
+        if (id == 1)
+            OnGate1Triggered();
+        else if (id == 2)
+            OnGate2Triggered();
+    }
+
+    public void OnBossGateBreak()
+    {
+        PauseWaves();
+        OpenGate1(false);
+        OpenGate2(true);
+    }
+
+    public void OnBonfireEnter(Bonfire bonfire)
+    {
+        if (bonfire.ID == 1)
+        {
+            OpenGate1(true);
+            ResetWaves();
+            RestoreBossGate();
+        }
+        else if (bonfire.ID == 2)
+        {
+            OpenGate2(true);
+            ResetWaves();
+            RestoreBossGate();
+        }
+    }
+
+    private void ResetWaves()
+    {
+        if (waveEnd == false && currWave == startWave)
+            return;
+
+        paused = false;
         currWave = startWave;
-        foreach (Enemy enemy in enemyList) {
+        foreach (Enemy enemy in enemyList)
+        {
             enemy.gameObject.SetActive(false);
         }
         waveEnd = false;
-        this.GetComponent<Collider>().enabled = true;
-        frontGate.position = gateStartPos;
     }
 
-    private void OnTriggerEnter(Collider other) {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Agent")
-            && other.GetComponentInParent<AgentController>().isPlayer) {
-            waveEnd = true;
-            closeGate = true;
-            this.GetComponent<Collider>().enabled = false;
-        }
+    private void PauseWaves()
+    {
+        paused = true;
+        GameMan.Instance.ResetAllProj();
+    }
+
+    private void OpenGate1(bool triggerOn)
+    {
+        frontGate.position = frontGateStartPos;
+        if(frontGateTrigger != null)
+            frontGateTrigger.SwitchTrigger(triggerOn);
+    }
+
+    private void OpenGate2(bool triggerOn)
+    {
+        secondGate.position = secondGateStartPos;
+        if (secondGateTrigger != null)
+            secondGateTrigger.SwitchTrigger(triggerOn);
+    }
+
+    private void RestoreBossGate()
+    {
+        bossGate.Restore();
+    }
+
+    private void OnGate1Triggered()
+    {
+        waveEnd = true;
+        closeFrontGate = true;
+        frontGateTrigger.SwitchTrigger(false);
+    }
+
+    private void OnGate2Triggered()
+    {
+        closeSecondGate = true;
+        secondGateTrigger.SwitchTrigger(false);
     }
 }

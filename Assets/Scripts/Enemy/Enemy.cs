@@ -64,15 +64,15 @@ public class Enemy : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void Activate() {
+    public virtual void Activate() {
         active = true;
     }
 
-    public void Deactivate() {
+    public virtual void Deactivate() {
         active = false;
     }
 
-    public void Reset() {
+    public virtual void Reset() {
         active = false;
         gameObject.SetActive(true);
         transform.position = startPos;

@@ -38,20 +38,26 @@ public class LevelUpUI : MonoBehaviour {
 
     void Start()
     {
-        powCurText = transform.Find("PowCur").GetComponent<TextMeshProUGUI>();
-        accCurText = transform.Find("AccCur").GetComponent<TextMeshProUGUI>();
-        frtCurText = transform.Find("FrtCur").GetComponent<TextMeshProUGUI>();
-        spdCurText = transform.Find("SpdCur").GetComponent<TextMeshProUGUI>();
-        ppdCurText = transform.Find("PpdCur").GetComponent<TextMeshProUGUI>();
-        skpCurText = transform.Find("SkpCur").GetComponent<TextMeshProUGUI>();
-        cstCurText = transform.Find("CstCur").GetComponent<TextMeshProUGUI>();
-        powUpBtn = transform.Find("PowUpBtn").GetComponent<Button>();
-        accUpBtn = transform.Find("AccUpBtn").GetComponent<Button>();
-        frtUpBtn = transform.Find("FrtUpBtn").GetComponent<Button>();
-        spdUpBtn = transform.Find("SpdUpBtn").GetComponent<Button>();
-        ppdUpBtn = transform.Find("PpdUpBtn").GetComponent<Button>();
-        skpUpBtn = transform.Find("SkpUpBtn").GetComponent<Button>();
+        powCurText = transform.Find("pow/Number/text").GetComponent<TextMeshProUGUI>();
+        accCurText = transform.Find("acc/Number/text").GetComponent<TextMeshProUGUI>();
+        frtCurText = transform.Find("frt/Number/text").GetComponent<TextMeshProUGUI>();
+        spdCurText = transform.Find("spd/Number/text").GetComponent<TextMeshProUGUI>();
+        ppdCurText = transform.Find("ppd/Number/text").GetComponent<TextMeshProUGUI>();
+        skpCurText = transform.Find("skp/Number/text").GetComponent<TextMeshProUGUI>();
+        cstCurText = transform.Find("cst/Number/text").GetComponent<TextMeshProUGUI>();
+        powUpBtn = transform.Find("pow/BtnPanel/Btn").GetComponent<Button>();
+        accUpBtn = transform.Find("acc/BtnPanel/Btn").GetComponent<Button>();
+        frtUpBtn = transform.Find("frt/BtnPanel/Btn").GetComponent<Button>();
+        spdUpBtn = transform.Find("spd/BtnPanel/Btn").GetComponent<Button>();
+        ppdUpBtn = transform.Find("ppd/BtnPanel/Btn").GetComponent<Button>();
+        skpUpBtn = transform.Find("skp/BtnPanel/Btn").GetComponent<Button>();
 
+        powUpBtn.onClick.AddListener(OnPowUp);
+        accUpBtn.onClick.AddListener(OnAccUp);
+        frtUpBtn.onClick.AddListener(OnFrtUp);
+        spdUpBtn.onClick.AddListener(OnSpdUp);
+        ppdUpBtn.onClick.AddListener(OnPpdUp);
+        skpUpBtn.onClick.AddListener(OnSkpUp);
 
         powCurText.text = pow.ToString();
         accCurText.text = acc.ToString();
@@ -79,7 +85,7 @@ public class LevelUpUI : MonoBehaviour {
             return;
         }
 
-        pow += 2;
+        pow = pow > 150 ? (int)(pow * 1.1f) : (int)(pow * 1.2f);
         cost += deltaCost;
         powCurText.text = pow.ToString();
         cstCurText.text = cost.ToString();
@@ -113,6 +119,9 @@ public class LevelUpUI : MonoBehaviour {
     public void OnFrtUp() {
         if (frt <= 0.1f) {
             frt = 0.1f;
+            foreach (AgentController ac in Agents) {
+                ac.shootCD = frt;
+            }
             return;
         }
 
@@ -123,9 +132,9 @@ public class LevelUpUI : MonoBehaviour {
             return;
         }
 
-        frt -= 0.1f;
+        frt *= 0.8f;
         cost += deltaCost;
-        frtCurText.text = frt.ToString();
+        frtCurText.text = string.Format("{0:0.00}", frt); // frt.ToString();
         cstCurText.text = cost.ToString();
         foreach (AgentController ac in Agents) {
             ac.shootCD = frt;

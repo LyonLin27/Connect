@@ -11,6 +11,7 @@ public class SteeringBehavior : MonoBehaviour {
 
     // The agent at hand here, and whatever target it is dealing with
     public AgentController agent;
+    public Transform agentTrans;
     public GameObject target;
 
     // Below are a bunch of variable declarations that will be used for the next few
@@ -40,7 +41,7 @@ public class SteeringBehavior : MonoBehaviour {
 
     // weights for flocking
     private float seekWeight = 5;
-    private float waWeight = 50;
+    private float waWeight = 30;
     private float sepWeight = 10;
     private float cohWeight = 1;
     private float algWeight = 1;
@@ -61,6 +62,7 @@ public class SteeringBehavior : MonoBehaviour {
     private float previousTime;
     private float countDn;
     private int strategyID = 0;
+    private float wallDetectLength = 8f;
 
     // two triggers attached, used for detect collision & prediction
     private CollisionDetector coneCheck;
@@ -78,9 +80,10 @@ public class SteeringBehavior : MonoBehaviour {
     protected void Awake() {
         agent = GetComponent<AgentController>();
         rb = GetComponent<Rigidbody>();
+        agentTrans = transform.Find("Cube");
         //wanderOrientation = agent.orientation;
-        coneCheck = transform.Find("Cube").Find("CapsuleDetector").GetComponent<CollisionDetector>();
-        cylnCheck = transform.Find("Cube").Find("CylinderDetector").GetComponent<CollisionDetector>();
+        coneCheck = agentTrans.Find("CapsuleDetector").GetComponent<CollisionDetector>();
+        cylnCheck = agentTrans.Find("CylinderDetector").GetComponent<CollisionDetector>();
 
         p_target = new List<GameObject>();
     }
@@ -90,8 +93,8 @@ public class SteeringBehavior : MonoBehaviour {
             * Stuck solution
             */
         // record position & time every 5 unit distance
-        if (previousPos == null || Vector3.Distance(transform.position, previousPos) > 5f) {
-            previousPos = transform.position;
+        if (previousPos == null || Vector3.Distance(agentTrans.position, previousPos) > 5f) {
+            previousPos = agentTrans.position;
             previousTime = Time.time;
         }
 
@@ -106,7 +109,7 @@ public class SteeringBehavior : MonoBehaviour {
             return new Vector3(0f, 0f, 0f);
         }
 
-        Vector3 currentPos = transform.position;
+        Vector3 currentPos = agentTrans.position;
         //Vector3 targetPos = target.transform.position;
         target_out = targetPos;
 
@@ -156,7 +159,7 @@ public class SteeringBehavior : MonoBehaviour {
         Vector3 targetPos = target.transform.position;
 
         //arrive
-        float dist = (targetPos - transform.position).magnitude;
+        float dist = (targetPos - agentTrans.position).magnitude;
         if (dist < slowRadiusL)
         {
             return Arrive(targetPos);
@@ -168,7 +171,7 @@ public class SteeringBehavior : MonoBehaviour {
             targetPos = previousTarget;
             countDn -= Time.deltaTime;
 
-            if (Vector3.Distance(transform.position, targetPos) < 1f) {
+            if (Vector3.Distance(agentTrans.position, targetPos) < 1f) {
                 countDn = 0;
             }
 
@@ -180,7 +183,7 @@ public class SteeringBehavior : MonoBehaviour {
             targetPos = hitM.point + hitM.normal * 5f;
             previousTarget = targetPos;
             Debug.DrawLine(hitM.point, hitM.point + hitM.normal * 5);
-            Debug.DrawLine(transform.position, hitM.point);
+            Debug.DrawLine(agentTrans.position, hitM.point);
         }
 
         // if stuck, try different ways
@@ -194,10 +197,10 @@ public class SteeringBehavior : MonoBehaviour {
                 if (wallReflectHit.collider == GetComponent<Collider>()) {
                     // pick the direction where whisker shows more space
                     if (hitL.distance > hitR.distance) {
-                        targetPos = targetPos - transform.right * 5f;
+                        targetPos = targetPos - agentTrans.right * 5f;
                     }
                     else {
-                        targetPos = targetPos + transform.right * 5f;
+                        targetPos = targetPos + agentTrans.right * 5f;
                     }
                     Debug.DrawLine(previousTarget, targetPos, Color.red, 5f);
                     previousTarget = targetPos;
@@ -229,8 +232,8 @@ public class SteeringBehavior : MonoBehaviour {
     // return vector3.zero if failed
     private Vector3 FanPathPlan() {
         Vector3 targetPos = Vector3.zero;
-        Vector3 midPoint = (transform.position + target.transform.position) / 2f;
-        Vector3 dir3d = (target.transform.position - transform.position);
+        Vector3 midPoint = (agentTrans.position + target.transform.position) / 2f;
+        Vector3 dir3d = (target.transform.position - agentTrans.position);
         Vector2 dir2d = new Vector2(dir3d.x, dir3d.z);
         dir2d = Vector2.Perpendicular(dir2d).normalized;
         dir3d = new Vector3(dir2d.x, 0f, dir2d.y);
@@ -244,14 +247,14 @@ public class SteeringBehavior : MonoBehaviour {
         while (!testSuccess && testIndex < testCount) {
             Vector3 testPoint = midPoint + dir3d * testDir * testIndex;
             Physics.Raycast(testPoint, (target.transform.position - testPoint).normalized * 100, out testTargetHit, 100f, LayerMask.GetMask("Wall", "Agent"));
-            Physics.Raycast(testPoint, (transform.position - testPoint).normalized * 100, out testSelfHit, 100f, LayerMask.GetMask("Wall", "Agent"));
-            Debug.DrawLine(transform.position, testPoint, Color.blue, 1f);
+            Physics.Raycast(testPoint, (agentTrans.position - testPoint).normalized * 100, out testSelfHit, 100f, LayerMask.GetMask("Wall", "Agent"));
+            Debug.DrawLine(agentTrans.position, testPoint, Color.blue, 1f);
             if (testTargetHit.collider && testSelfHit.collider) {
                 Debug.DrawLine(testPoint, testTargetHit.point, Color.yellow, 1f);
                 //print(testTargetHit.collider.name + testSelfHit.collider.name == name);
                 if (testTargetHit.collider.name == target.name && testSelfHit.collider.name == name) {
                     testSuccess = true;
-                    Debug.DrawLine(transform.position, testPoint, Color.white, 6f);
+                    Debug.DrawLine(agentTrans.position, testPoint, Color.white, 6f);
                     Debug.DrawLine(target.transform.position, testPoint, Color.white, 6f);
 
                     break;
@@ -274,7 +277,7 @@ public class SteeringBehavior : MonoBehaviour {
     public Vector3 Flee(Vector3 targetPos) {
 
 
-        Vector3 currentPos = transform.position;
+        Vector3 currentPos = agentTrans.position;
         //Vector3 targetPos = target.transform.position;
         target_out = targetPos;
 
@@ -292,7 +295,7 @@ public class SteeringBehavior : MonoBehaviour {
     // Slow down when close to targetPos
     // Returns linear acc in Vector3
     public Vector3 Arrive(Vector3 targetPos) {
-        Vector3 currentPos = transform.position;
+        Vector3 currentPos = agentTrans.position;
         // Vector3 targetPos = target.transform.position;
         Vector3 dir = targetPos - currentPos;
         float dist = dir.magnitude;
@@ -334,7 +337,7 @@ public class SteeringBehavior : MonoBehaviour {
     // Predict future position of the target
     // Returns the position 
     public Vector3 FutureTargetPos() {
-        Vector3 currentPos = transform.position;
+        Vector3 currentPos = agentTrans.position;
         Vector3 targetPos = target.transform.position;
         Vector3 dir = targetPos - currentPos;
         float dist = dir.magnitude;
@@ -357,7 +360,7 @@ public class SteeringBehavior : MonoBehaviour {
     public Vector3 PursueArrive() {
         Vector3 targetPos = FutureTargetPos();
 
-        float dist = (targetPos - transform.position).magnitude;
+        float dist = (targetPos - agentTrans.position).magnitude;
 
         if (dist < slowRadiusL) {
             return Arrive(targetPos);
@@ -376,7 +379,7 @@ public class SteeringBehavior : MonoBehaviour {
             targetPos = previousTarget;
             countDn -= Time.deltaTime;
 
-            if (Vector3.Distance(transform.position, targetPos) < 1f) {
+            if (Vector3.Distance(agentTrans.position, targetPos) < 1f) {
                 countDn = 0;
             }
 
@@ -411,7 +414,7 @@ public class SteeringBehavior : MonoBehaviour {
             targetPos = previousTarget;
             countDn -= Time.deltaTime;
 
-            if (Vector3.Distance(transform.position, targetPos) < 1f) {
+            if (Vector3.Distance(agentTrans.position, targetPos) < 1f) {
                 countDn = 0;
             }
 
@@ -441,7 +444,7 @@ public class SteeringBehavior : MonoBehaviour {
     // Returns linear acc
     public Vector3 Evade() {
         Vector3 targetPos = FutureTargetPos();
-        float dist = (targetPos - transform.position).magnitude;
+        float dist = (targetPos - agentTrans.position).magnitude;
         return Flee(targetPos);
     }
 
@@ -455,7 +458,7 @@ public class SteeringBehavior : MonoBehaviour {
             targetPos = previousTarget;
             countDn -= Time.deltaTime;
 
-            if (Vector3.Distance(transform.position, targetPos) < 1f) {
+            if (Vector3.Distance(agentTrans.position, targetPos) < 1f) {
                 countDn = 0;
             }
 
@@ -483,15 +486,15 @@ public class SteeringBehavior : MonoBehaviour {
 
     public Vector4 Wander() {
         wanderOrientation += NormalRandomGen(0, 0.3f) * wanderRate;
-        float targetYRot = wanderOrientation + transform.rotation.eulerAngles.y * Mathf.Deg2Rad;
+        float targetYRot = wanderOrientation + agentTrans.rotation.eulerAngles.y * Mathf.Deg2Rad;
 
         // center fo the wander circle
-        Vector3 targetCenter = transform.position + wanderOffset * transform.forward;
+        Vector3 targetCenter = agentTrans.position + wanderOffset * agentTrans.forward;
         Vector3 targetPos = targetCenter + wanderRadius * RadianToVector3(targetYRot);
         target_out = targetCenter;
 
         float angularAcc = Face(targetPos);
-        Vector3 linearAcc = maxAcceleration * transform.forward;
+        Vector3 linearAcc = maxAcceleration * agentTrans.forward;
         return new Vector4(linearAcc.x, linearAcc.y, linearAcc.z, angularAcc);
     }
 
@@ -522,7 +525,7 @@ public class SteeringBehavior : MonoBehaviour {
 
         if (coneCheck.CollPoints.Count == 0) return Vector3.zero;
 
-        Vector3 targetPos = transform.position + transform.forward * 5f;
+        Vector3 targetPos = agentTrans.position + agentTrans.forward * 5f;
         Vector3 closestColl = Vector3.zero;
         Vector3 sumPos = Vector3.zero;
         foreach (Vector3 point in coneCheck.CollPoints) {
@@ -530,24 +533,24 @@ public class SteeringBehavior : MonoBehaviour {
             if (closestColl == Vector3.zero) {
                 closestColl = point;
             }
-            else if (Vector3.Distance(point, transform.position) < Vector3.Distance(closestColl, transform.position)) {
+            else if (Vector3.Distance(point, agentTrans.position) < Vector3.Distance(closestColl, agentTrans.position)) {
                 closestColl = point;
             }
         }
         Vector3 avgPos = sumPos / coneCheck.CollPoints.Count;
 
         // if too close, evade backwards
-        if (Vector3.Distance(closestColl, transform.position) < 4f) {
-            Vector3 targetDir = (transform.position - closestColl).normalized; // switch cloestColl / avgPos
-            targetPos = transform.position + targetDir * 5f;
-            //Debug.DrawLine(targetPos, transform.position, Color.red, 0.5f);
+        if (Vector3.Distance(closestColl, agentTrans.position) < 4f) {
+            Vector3 targetDir = (agentTrans.position - closestColl).normalized; // switch cloestColl / avgPos
+            targetPos = agentTrans.position + targetDir * 5f;
+            //Debug.DrawLine(targetPos, agentTrans.position, Color.red, 0.5f);
             return targetPos;
         }
         // if still some distance, evade to the side
         else {
-            //Debug.DrawLine(transform.position, closestColl, Color.yellow, 0.5f);
+            //Debug.DrawLine(agentTrans.position, closestColl, Color.yellow, 0.5f);
 
-            Vector3 dir3d = (closestColl - transform.position);
+            Vector3 dir3d = (closestColl - agentTrans.position);
             Vector2 dir2d = new Vector2(dir3d.x, dir3d.z);
             dir2d = Vector2.Perpendicular(dir2d).normalized;
             dir3d = new Vector3(dir2d.x, 0f, dir2d.y);
@@ -581,9 +584,22 @@ public class SteeringBehavior : MonoBehaviour {
         return new Vector4(linearAcc.x, linearAcc.y, linearAcc.z, angularAcc);
     }
 
-    // return the pos of closest future collision (only with agent)
+    // return the pos of closest future collision
     // this ignores the current target so pursue and seek can work
     public Vector3 CollPrediction() {
+        Vector3 result = CollPredictionDanger();
+
+        if (result != Vector3.zero)
+        {
+            return result;
+        }
+
+        result = CollPredictionAgent();
+        return result;
+    }
+
+    public Vector3 CollPredictionAgent()
+    {
         if (cylnCheck.CollidersClose.Count == 0) return Vector3.zero;
 
         float shortestTime = float.MaxValue / 10f;
@@ -591,25 +607,103 @@ public class SteeringBehavior : MonoBehaviour {
         float firstSep = 0f, firstDist = 0f;
         Vector3 firstRelPos = Vector3.zero, firstRelVel = Vector3.zero;
 
-        foreach (Collider coll in cylnCheck.DangersClose) {
+        foreach (Collider coll in cylnCheck.CollidersClose)
+        {
+            if (coll.gameObject.layer != LayerMask.NameToLayer("Agent"))
+            {
+                continue;
+            }
+            else
+            {
+                // coll must be agent
+                Vector3 otherPos = coll.gameObject.transform.position;
+                Rigidbody otherRB = coll.gameObject.GetComponentInParent<Rigidbody>();
+
+                Vector3 relPos = otherPos - agentTrans.position;
+                Vector3 relVel = otherRB.velocity - rb.velocity;
+                float relSpd = relVel.magnitude;
+                float time2Coll = -Vector3.Dot(relPos, relVel) / (relSpd * relSpd);
+
+                float dist = relPos.magnitude;
+                float minSep = dist - relSpd * time2Coll;
+                if (minSep > 1f)
+                {
+                    continue;
+                }
+
+                if (time2Coll > 0 && time2Coll < shortestTime)
+                {
+                    shortestTime = time2Coll;
+                    firstTarget = otherPos;
+                    firstSep = minSep;
+                    firstDist = dist;
+                    firstRelPos = relPos;
+                    firstRelVel = relVel;
+                }
+            }
+        }
+
+        // calc the steering
+        // if no target, return zero
+        if (firstTarget == Vector3.zero)
+        {
+            return Vector3.zero;
+        }
+
+        Vector3 relaPos;
+
+        // if too close, avoid base on current pos
+        if (firstSep <= 0f || firstDist < 2f)
+        {
+            relaPos = firstTarget - agentTrans.position;
+        }
+        // else avoid base on future position
+        else
+        {
+            relaPos = firstRelPos + firstRelVel * shortestTime;
+        }
+
+        Vector3 collPos = agentTrans.position + relaPos;
+
+        // use the following two line to return linear acc
+        //relaPos.Normalize();
+        //return relaPos * -maxAcceleration;
+
+        // return predicted coll position
+        return collPos;
+    }
+
+    public Vector3 CollPredictionDanger()
+    {
+        if (cylnCheck.CollidersClose.Count == 0) return Vector3.zero;
+
+        float shortestTime = float.MaxValue / 10f;
+        Vector3 firstTarget = Vector3.zero; // zero is none
+        float firstSep = 0f, firstDist = 0f;
+        Vector3 firstRelPos = Vector3.zero, firstRelVel = Vector3.zero;
+
+        foreach (Collider coll in cylnCheck.DangersClose)
+        {
             // coll must be enemy proj
             // first check if projectile still there
             if (!coll.gameObject.activeInHierarchy) continue;
             Vector3 otherPos = coll.gameObject.transform.position;
             Rigidbody otherRB = coll.gameObject.GetComponentInParent<Rigidbody>();
 
-            Vector3 relPos = otherPos - transform.position;
+            Vector3 relPos = otherPos - agentTrans.position;
             Vector3 relVel = otherRB.velocity - rb.velocity;
             float relSpd = relVel.magnitude;
             float time2Coll = -Vector3.Dot(relPos, relVel) / (relSpd * relSpd);
 
             float dist = relPos.magnitude;
             float minSep = dist - relSpd * time2Coll;
-            if (minSep > 1f) {
+            if (minSep > 1f)
+            {
                 continue;
             }
 
-            if (time2Coll > 0 && time2Coll < shortestTime) {
+            if (time2Coll > 0 && time2Coll < shortestTime)
+            {
                 shortestTime = time2Coll;
                 firstTarget = otherPos;
                 firstSep = minSep;
@@ -619,57 +713,27 @@ public class SteeringBehavior : MonoBehaviour {
             }
         }
 
-        if (firstSep == 0) {
-            foreach (Collider coll in cylnCheck.CollidersClose) {
-                if (coll.gameObject.layer != LayerMask.NameToLayer("Agent")) {
-                    continue;
-                }
-                else {
-                    // coll must be agent
-                    Vector3 otherPos = coll.gameObject.transform.position;
-                    Rigidbody otherRB = coll.gameObject.GetComponentInParent<Rigidbody>();
-
-                    Vector3 relPos = otherPos - transform.position;
-                    Vector3 relVel = otherRB.velocity - rb.velocity;
-                    float relSpd = relVel.magnitude;
-                    float time2Coll = -Vector3.Dot(relPos, relVel) / (relSpd * relSpd);
-
-                    float dist = relPos.magnitude;
-                    float minSep = dist - relSpd * time2Coll;
-                    if (minSep > 2f) {
-                        continue;
-                    }
-
-                    if (time2Coll > 0 && time2Coll < shortestTime) {
-                        shortestTime = time2Coll;
-                        firstTarget = otherPos;
-                        firstSep = minSep;
-                        firstDist = dist;
-                        firstRelPos = relPos;
-                        firstRelVel = relVel;
-                    }
-                }
-            }
-        }
-
         // calc the steering
         // if no target, return zero
-        if (firstTarget == Vector3.zero) {
+        if (firstTarget == Vector3.zero)
+        {
             return Vector3.zero;
         }
 
         Vector3 relaPos;
 
         // if too close, avoid base on current pos
-        if (firstSep <= 0f || firstDist < 2f) {
-            relaPos = firstTarget - transform.position;
+        if (firstSep <= 0f || firstDist < 2f)
+        {
+            relaPos = firstTarget - agentTrans.position;
         }
         // else avoid base on future position
-        else {
+        else
+        {
             relaPos = firstRelPos + firstRelVel * shortestTime;
         }
 
-        Vector3 collPos = transform.position + relaPos;
+        Vector3 collPos = agentTrans.position + relaPos;
 
         // use the following two line to return linear acc
         //relaPos.Normalize();
@@ -689,7 +753,7 @@ public class SteeringBehavior : MonoBehaviour {
     // align to target rotation
     // return angular acc
     public float Align(float targetRot) {
-        float currentRot = transform.rotation.eulerAngles.y;
+        float currentRot = agentTrans.rotation.eulerAngles.y;
         //float targetRot = target.transform.rotation.eulerAngles.y;
 
         float rotY = targetRot - currentRot;
@@ -734,7 +798,7 @@ public class SteeringBehavior : MonoBehaviour {
 
     // face target. return angular acc
     public float Face(Vector3 targetPos) {
-        Vector3 currentPos = transform.position;
+        Vector3 currentPos = agentTrans.position;
         //Vector3 targetPos = target.transform.position;
         Vector2 curPos2 = new Vector2(currentPos.x, currentPos.z);
         Vector2 tarPos2 = new Vector2(targetPos.x, targetPos.z);
@@ -758,7 +822,7 @@ public class SteeringBehavior : MonoBehaviour {
 
         Vector3 seekTar = Arrive(target.transform.position);
         Vector3 wallAvo = FlockingWA();
-        float ww = waWeight;
+        float ww = waWeight * (hitM.distance);
         if (wallAvo == Vector3.zero) {
             ww = 0f;
         }
@@ -772,11 +836,12 @@ public class SteeringBehavior : MonoBehaviour {
         float algA = FlockingAlgA();
         float algTar = Align(target.transform.eulerAngles.y);
         float algFw = FaceForward();
-        //Debug.DrawLine(transform.position, transform.position + wallAvo*ww, Color.black);
-        //Debug.DrawLine(transform.position, transform.position + sep * sw, Color.red);
-        //Debug.DrawLine(transform.position, transform.position + coh * cohWeight, Color.blue);
-        //Debug.DrawLine(transform.position, transform.position + alg * algWeight, Color.green);
-        //Debug.DrawLine(transform.position, transform.position + seekTar * seekWeight, Color.yellow);
+        Debug.DrawLine(transform.position, transform.position + 0.1f * wallAvo*ww, Color.black);
+        Debug.DrawLine(transform.position, transform.position + 0.1f * sep * sw, Color.red);
+        Debug.DrawLine(transform.position, transform.position + 0.1f * coh * cohWeight, Color.blue);
+        Debug.DrawLine(transform.position, transform.position + 0.1f * alg * algWeight, Color.green);
+        Debug.DrawLine(transform.position, transform.position + 0.1f * seekTar * seekWeight, Color.yellow);
+
         linear = wallAvo * ww + sep * sw + coh * cohWeight + alg * algWeight + seekTar*seekWeight;
         linear /= (ww + sw + cohWeight + algWeight + seekWeight);
         //angular = algA * 0.4f + algTar * 0.2f + algFw * 0.4f;
@@ -784,13 +849,13 @@ public class SteeringBehavior : MonoBehaviour {
 
         if (p_target.Count > 0) {
             // hard code
-            if (Vector3.Distance(transform.position, p_target[0].transform.position) > 7f) {
+            if (Vector3.Distance(agentTrans.position, p_target[0].transform.position) > 7f) {
                 sw = 0;
             }
             linear = Arrive(p_target[0].transform.position) * seekWeight + sep*sw;
             linear /= (seekWeight + sw);
             angular = Face(p_target[0].transform.position);
-            if (Vector3.Distance(transform.position, p_target[0].transform.position) < targetRadiusL) {
+            if (Vector3.Distance(agentTrans.position, p_target[0].transform.position) < targetRadiusL) {
                 p_target.Remove(p_target[0]);
             }
             return new Vector4(linear.x, linear.y, linear.z, angular);
@@ -829,27 +894,30 @@ public class SteeringBehavior : MonoBehaviour {
     private Vector3 FlockingWA() {
         CollDetection();
 
-        float reachM = 15;
-        float closeM = 5;
-        float reachL = 5;
-        float reachR = 5;
+        float reachM = wallDetectLength;
+        float closeM = wallDetectLength * 0.5f;
+        float reachL = wallDetectLength * 0.5f;
+        float reachR = wallDetectLength * 0.5f;
+
+        float distWeight = 1f - Mathf.Min(hitM.distance, hitL.distance, hitR.distance) / wallDetectLength;
+
         if (hitM.collider && hitM.distance < closeM) {
-            return Seek(hitM.point + hitM.normal*10 + (target.transform.position-transform.position).normalized*5);
+            return distWeight * Seek(hitM.point + hitM.normal*10 + (target.transform.position- agentTrans.position).normalized*5);
         }
         if (hitL.collider && hitR.collider && hitL.distance < reachL && hitR.distance < reachR) {
             if (hitM.distance < reachM) {
-                return Flee(hitM.point);
+                return distWeight * Flee(hitM.point);
             }
             else {
-                return Seek((hitL.point + hitR.point)/2f);
+                return distWeight * Seek((hitL.point + hitR.point)/2f);
             }
         }
-        if ((hitL.collider && hitL.distance < reachL ) || (hitR.collider && hitR.distance < reachR)) {
+        if ((!hitR.collider && hitL.collider && hitL.distance < reachL ) || (!hitL.collider && hitR.collider && hitR.distance < reachR)) {
             if (hitL.distance < hitR.distance) {
-                return Seek(transform.position-transform.right);
+                return distWeight * 0.1f * Seek(agentTrans.position-transform.right);
             }
             else {
-                return Seek(transform.position+transform.right);
+                return distWeight * 0.1f * Seek(agentTrans.position+transform.right);
             }
         }
 
@@ -857,22 +925,27 @@ public class SteeringBehavior : MonoBehaviour {
     }
 
     private Vector3 FlockingSepCP() {
-        Vector3 targetPos = CollPrediction();
-        if (targetPos == Vector3.zero)
-            return Vector3.zero;
-        return Flee(CollPrediction());
+        Vector3 targetPos = CollPredictionDanger();
+        if (targetPos != Vector3.zero)
+            return Flee(targetPos);
+
+        targetPos = CollPredictionAgent();
+        float dist = Vector3.Distance(agentTrans.position, targetPos);
+        float distWeight = dist < sepDist ? (1f - dist / sepDist) : 0f;
+        Debug.DrawRay(agentTrans.position, 0.1f * distWeight * Flee(targetPos), Color.white, 0.1f);
+        return distWeight * Flee(targetPos);
     }
 
     private Vector3 FlockingSepCA() {
         Vector3 closest = Vector3.positiveInfinity;
         foreach (Vector3 coll in cylnCheck.CollPoints) {
-            if (Vector3.Distance(transform.position, coll) > sepDist)
+            if (Vector3.Distance(agentTrans.position, coll) > sepDist)
                 continue;
-            else if (Vector3.Distance(transform.position, coll) < Vector3.Distance(transform.position, closest)) {
+            else if (Vector3.Distance(agentTrans.position, coll) < Vector3.Distance(agentTrans.position, closest)) {
                 closest = coll;
             }
         }
-        if (Vector3.Distance(transform.position, closest) > sepDist) {
+        if (Vector3.Distance(agentTrans.position, closest) > sepDist) {
             return Vector3.zero;
         }
         else {
@@ -937,15 +1010,15 @@ public class SteeringBehavior : MonoBehaviour {
     private void CollDetection() {
         //Vector3 leftDir = Quaternion.Euler(0, -coneOpen, 0) * transform.forward;
         //Vector3 rightDir = Quaternion.Euler(0, coneOpen, 0) * transform.forward;
-        Vector3 posOffset = transform.right * 0.5f;
+        Vector3 posOffset = Vector3.Cross(rb.velocity, Vector3.up).normalized; // vector to the left of velocity
 
-        Physics.Raycast(transform.position, transform.forward * 10f, out hitM, 100f, LayerMask.GetMask("Wall"));
-        Physics.Raycast(transform.position + posOffset, transform.forward * 10f, out hitL, 100f, LayerMask.GetMask("Wall"));
-        Physics.Raycast(transform.position - posOffset, transform.forward * 10f, out hitR, 100f, LayerMask.GetMask("Wall"));
+        Physics.Raycast(agentTrans.position, rb.velocity.normalized * wallDetectLength, out hitM, 100f, LayerMask.GetMask("Wall"), QueryTriggerInteraction.Ignore);
+        Physics.Raycast(agentTrans.position + posOffset, rb.velocity.normalized * wallDetectLength, out hitL, 100f, LayerMask.GetMask("Wall"), QueryTriggerInteraction.Ignore);
+        Physics.Raycast(agentTrans.position - posOffset, rb.velocity.normalized * wallDetectLength, out hitR, 100f, LayerMask.GetMask("Wall"), QueryTriggerInteraction.Ignore);
 
-        Debug.DrawRay(transform.position, transform.forward * 10f);
-        Debug.DrawRay(transform.position + posOffset, transform.forward * 5f, Color.red);
-        Debug.DrawRay(transform.position - posOffset, transform.forward * 5f, Color.red);
+        //Debug.DrawRay(agentTrans.position, rb.velocity.normalized * wallDetectLength);
+        //Debug.DrawRay(agentTrans.position + posOffset, rb.velocity.normalized * wallDetectLength, Color.red);
+        //Debug.DrawRay(agentTrans.position - posOffset, rb.velocity.normalized * wallDetectLength, Color.red);
     }
 
     private float NormalRandomGen(float mean = 0, float stdDev = 1) {
@@ -966,22 +1039,22 @@ public class SteeringBehavior : MonoBehaviour {
     }
 
     public Vector3 FollowPath() {
-        if (Vector3.Distance(transform.position, pathPoints[currentPathPointIndex].position) < targetRadiusL) {
+        if (Vector3.Distance(agentTrans.position, pathPoints[currentPathPointIndex].position) < targetRadiusL) {
             if(currentPathPointIndex < pathPoints.Count-1)
                 currentPathPointIndex++;
         }
-        if (currentPathPointIndex == pathPoints.Count - 1 && Vector3.Distance(transform.position, pathPoints[currentPathPointIndex].position) < slowRadiusL)
+        if (currentPathPointIndex == pathPoints.Count - 1 && Vector3.Distance(agentTrans.position, pathPoints[currentPathPointIndex].position) < slowRadiusL)
             return Arrive(pathPoints[currentPathPointIndex].position);
 
         return SmartSeek(pathPoints[currentPathPointIndex].position);
     }
 
     public Vector3 DumbFollowPath() {
-        if (Vector3.Distance(transform.position, pathPoints[currentPathPointIndex].position) < targetRadiusL) {
+        if (Vector3.Distance(agentTrans.position, pathPoints[currentPathPointIndex].position) < targetRadiusL) {
             if (currentPathPointIndex < pathPoints.Count - 1)
                 currentPathPointIndex++;
         }
-        if (currentPathPointIndex == pathPoints.Count - 1 && Vector3.Distance(transform.position, pathPoints[currentPathPointIndex].position) < slowRadiusL) {
+        if (currentPathPointIndex == pathPoints.Count - 1 && Vector3.Distance(agentTrans.position, pathPoints[currentPathPointIndex].position) < slowRadiusL) {
             return Arrive(pathPoints[currentPathPointIndex].position);
         }
 
@@ -996,7 +1069,7 @@ public class SteeringBehavior : MonoBehaviour {
         float reachL = 5;
         float reachR = 5;
         if (hitM.collider && hitM.distance < closeM) {
-            return Seek(hitM.point + hitM.normal * 10 + (target.transform.position - transform.position).normalized * 5);
+            return Seek(hitM.point + hitM.normal * 10 + (target.transform.position - agentTrans.position).normalized * 5);
         }
         if (hitL.collider && hitR.collider && hitL.distance < reachL && hitR.distance < reachR) {
             if (hitM.distance < reachM) {
@@ -1008,14 +1081,14 @@ public class SteeringBehavior : MonoBehaviour {
         }
         if ((hitL.collider && hitL.distance < reachL) || (hitR.collider && hitR.distance < reachR)) {
             if (hitL.distance < hitR.distance) {
-                return Seek(transform.position - transform.right);
+                return Seek(agentTrans.position - agentTrans.right);
             }
             else {
-                return Seek(transform.position + transform.right);
+                return Seek(agentTrans.position + agentTrans.right);
             }
         }
 
-        if (Vector3.Distance(transform.position, pathPoints[currentPathPointIndex].position) < targetRadiusL) {
+        if (Vector3.Distance(agentTrans.position, pathPoints[currentPathPointIndex].position) < targetRadiusL) {
             if (currentPathPointIndex < pathPoints.Count - 1) {
                 // hard code
                 /**
@@ -1035,7 +1108,7 @@ public class SteeringBehavior : MonoBehaviour {
                 currentPathPointIndex++;
             }
         }
-        if (currentPathPointIndex == pathPoints.Count - 1 && Vector3.Distance(transform.position, pathPoints[currentPathPointIndex].position) < slowRadiusL) {
+        if (currentPathPointIndex == pathPoints.Count - 1 && Vector3.Distance(agentTrans.position, pathPoints[currentPathPointIndex].position) < slowRadiusL) {
             return Arrive(pathPoints[currentPathPointIndex].position);
         }
 
@@ -1044,5 +1117,11 @@ public class SteeringBehavior : MonoBehaviour {
 
     public float FacePathPoint() {
         return Face(pathPoints[currentPathPointIndex].position);
+    }
+
+	private void OnDrawGizmosSelected()
+	{
+        Gizmos.DrawWireSphere(transform.position, targetRadiusL);
+        Gizmos.DrawWireSphere(transform.position, sepDist);
     }
 }

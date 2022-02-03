@@ -34,16 +34,26 @@ public class EnemyProjectile : MonoBehaviour
         transform.localScale = defaultScale;
         gameObject.SetActive(true);
         StartCoroutine("DisableAfterTime", lifeTime);
-        StartCoroutine("ShrinkAfterTime", lifeTime-1f);
+        StartCoroutine("ShrinkAfterTime", lifeTime-0.5f);
     }
 
     protected virtual void Work() {
         if (deactivating) {
-            transform.localScale = transform.localScale - defaultScale * Time.deltaTime;
+            transform.localScale = transform.localScale - defaultScale * Time.deltaTime * 2.0f;
         }
     }
 
-    public virtual void FinishWork()
+    public virtual void FinishWorkNicely()
+    {
+        if (gameObject.activeInHierarchy && working && !deactivating)
+        {
+            StopAllCoroutines();
+            StartCoroutine("DisableAfterTime", 0.5f);
+            StartCoroutine("ShrinkAfterTime", 0f);
+        }
+    }
+
+    protected virtual void FinishWork()
     {
         working = false;
         gameObject.SetActive(false);
@@ -68,5 +78,6 @@ public class EnemyProjectile : MonoBehaviour
     protected IEnumerator ShrinkAfterTime(float time) {
         yield return new WaitForSeconds(time);
         deactivating = true;
+        rb.velocity = Vector3.zero;
     }
 }

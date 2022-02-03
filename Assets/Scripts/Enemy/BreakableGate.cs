@@ -8,6 +8,9 @@ public class BreakableGate : Enemy
     public float hp_regen = 2f;
     public ParticleSystem deathParticle;
 
+    public delegate void BreakAction();
+    public event BreakAction OnBreak;
+
     protected override void Start() {
         //base.Start();
         gameMan = GameMan.Instance;
@@ -28,10 +31,19 @@ public class BreakableGate : Enemy
     protected override void Death() {
         base.Death();
         deathParticle.Play();
+        if (OnBreak != null)
+            OnBreak();
     }
 
     protected override IEnumerator Outro() {
         yield return new WaitForSeconds(0.2f);
         Death();
+    }
+
+    public void Restore()
+    {
+        hp = hp_max;
+        Activate();
+        gameObject.SetActive(true);
     }
 }
